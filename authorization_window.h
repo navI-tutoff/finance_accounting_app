@@ -2,6 +2,12 @@
 #define AUTHORIZATION_WINDOW_H
 
 #include <QMainWindow>
+#include <QSqlQuery>
+
+#include <QCryptographicHash>
+#include <QRegularExpression>
+
+#include "database.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,6 +26,8 @@ public:
 private slots:
 
     void on_signInButton_clicked();
+
+    void on_signUpButton_clicked();
 
 private:
     Ui::AuthorizationWindow *ui;

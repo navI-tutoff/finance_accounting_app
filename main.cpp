@@ -1,10 +1,10 @@
 #include "authorization_window.h"
 
 #include <QApplication>
+#include <QFile>
 
 #include "database.h"
 
-#include <QFile>
 
 QString readTextFile(QString path) {
     QFile file(path);
