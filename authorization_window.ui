@@ -158,8 +158,7 @@
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">margin-left: auto;
-margin-right: auto;</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string/>

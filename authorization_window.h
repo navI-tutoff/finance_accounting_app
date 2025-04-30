@@ -7,7 +7,9 @@
 #include <QCryptographicHash>
 #include <QRegularExpression>
 
+#include "major_application_window.h"
 #include "database.h"
+#include "user_session.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

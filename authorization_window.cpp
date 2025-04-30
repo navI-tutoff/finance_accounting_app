@@ -25,9 +25,16 @@ void AuthorizationWindow::on_signInButton_clicked() {
     singInQuery.bindValue(":password", password);
     if (singInQuery.exec()) {
         if (singInQuery.next()) {
-            qDebug() << singInQuery.value("id").toInt();
             ui->infoLabel->setStyleSheet("color: green;");
             ui->infoLabel->setText("Вы успешно авторизовались");
+
+            // open major app window and close auth window
+            MajorApplicationWindow *majorApplicationWindow = new MajorApplicationWindow();
+            majorApplicationWindow->show();
+
+            UserSession::instance().setLogin(login);
+
+            this->close();
         } else {
             ui->infoLabel->setStyleSheet("color: red;");
             ui->infoLabel->setText("Неверный логин или пароль");
