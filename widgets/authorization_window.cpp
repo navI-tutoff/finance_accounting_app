@@ -28,11 +28,13 @@ void AuthorizationWindow::on_signInButton_clicked() {
             ui->infoLabel->setStyleSheet("color: green;");
             ui->infoLabel->setText("Вы успешно авторизовались");
 
+            int id = singInQuery.value("id").toInt();
+            UserSession::instance().setLogin(login);
+            UserSession::instance().setId(id);
+
             // open major app window and close auth window
             MajorApplicationWindow *majorApplicationWindow = new MajorApplicationWindow();
             majorApplicationWindow->show();
-
-            UserSession::instance().setLogin(login);
 
             this->close();
         } else {

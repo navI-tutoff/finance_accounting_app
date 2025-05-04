@@ -33,5 +33,7 @@ private slots:
 
 private:
     Ui::AuthorizationWindow *ui;
+
+    QString userLogin;
 };
 #endif // AUTHORIZATION_WINDOW_H

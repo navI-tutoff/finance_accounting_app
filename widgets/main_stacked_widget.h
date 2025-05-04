@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "../data_structures/user_session.h"
+
 namespace Ui {
 class MainStackedWidget;
 }

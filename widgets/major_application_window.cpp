@@ -55,6 +55,11 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
     connect(ui->cryptoWindowPushButton, &QPushButton::clicked, this, [=]() {
         ui->basicStackedWidget->setCurrentWidget(cryptoStackedWidget);
     });
+
+    // QSqlQuery query(Database::instance().database());
+    // query.prepare("INSERT INTO crypto (id, user_id, coin, volume, avg_buy_price, current_price, amount) VALUES (1, 15, :coin, 2000, 4000, 4600, 1.14);");
+    // query.bindValue(":coin", "ETH");
+    // query.exec();
 }
 
 MajorApplicationWindow::~MajorApplicationWindow() {

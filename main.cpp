@@ -31,10 +31,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // AuthorizationWindow w;
-    // w.show();
-
-    MajorApplicationWindow w;
+    AuthorizationWindow w;
     w.show();
+
+    // MajorApplicationWindow w;
+    // w.show();
     return a.exec();
 }

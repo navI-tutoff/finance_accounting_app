@@ -5,6 +5,7 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MainStackedWidget) {
     ui->setupUi(this);
+
 }
 
 MainStackedWidget::~MainStackedWidget() {

@@ -2,6 +2,11 @@
 #define CRYPTO_STACKED_WIDGET_H
 
 #include <QWidget>
+#include <QTableView>
+#include <QSqlQueryModel>
+#include <QSqlQuery>
+
+#include "../data_structures/user_session.h"
 
 namespace Ui {
 class CryptoStackedWidget;
@@ -16,6 +21,9 @@ public:
 
 private:
     Ui::CryptoStackedWidget *ui;
+
+    QTableView *tableView;
+    QSqlQueryModel *model;
 };
 
 #endif // CRYPTO_STACKED_WIDGET_H

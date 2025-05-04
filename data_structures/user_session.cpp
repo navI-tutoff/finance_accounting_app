@@ -10,5 +10,13 @@ void UserSession::setLogin(const QString& login) {
 }
 
 const QString& UserSession::login() const {
-    return m_login;
+    return this->m_login;
+}
+
+void UserSession::setId(const int &id) {
+    this->m_id = id;
+}
+
+const int& UserSession::id() const {
+    return this->m_id;
 }
