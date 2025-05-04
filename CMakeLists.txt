@@ -14,9 +14,29 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
 
 set(PROJECT_SOURCES
         main.cpp
-        authorization_window.cpp
-        authorization_window.h
-        authorization_window.ui
+
+        widgets/authorization_window.cpp
+        widgets/authorization_window.h
+        widgets/authorization_window.ui
+
+        widgets/major_application_window.cpp
+        widgets/major_application_window.h
+        widgets/major_application_window.ui
+
+        widgets/main_stacked_widget.h
+        widgets/main_stacked_widget.cpp
+        widgets/main_stacked_widget.ui
+
+        widgets/crypto_stacked_widget.h
+        widgets/crypto_stacked_widget.cpp
+        widgets/crypto_stacked_widget.ui
+
+        data_structures/database.h
+        data_structures/database.cpp
+
+        data_structures/user_session.h
+        data_structures/user_session.cpp
+
         resource.qrc
 )
 
@@ -25,10 +45,28 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         resource.qrc
-        database.h database.cpp
-        major_application_window.h major_application_window.cpp major_application_window.ui
-        user_session.h user_session.cpp
 
+        widgets/authorization_window.cpp
+        widgets/authorization_window.h
+        widgets/authorization_window.ui
+
+        widgets/major_application_window.cpp
+        widgets/major_application_window.h
+        widgets/major_application_window.ui
+
+        widgets/main_stacked_widget.h
+        widgets/main_stacked_widget.cpp
+        widgets/main_stacked_widget.ui
+
+        widgets/crypto_stacked_widget.h
+        widgets/crypto_stacked_widget.cpp
+        widgets/crypto_stacked_widget.ui
+
+        data_structures/database.h
+        data_structures/database.cpp
+
+        data_structures/user_session.h
+        data_structures/user_session.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET finance_accounting_application APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -3,8 +3,12 @@
 
 #include <QMainWindow>
 
-#include "database.h"
-#include "user_session.h"
+#include "../data_structures/database.h"
+#include "../data_structures/user_session.h"
+
+#include "main_stacked_widget.h"
+#include "crypto_stacked_widget.h"
+
 
 namespace Ui {
 class MajorApplicationWindow;
@@ -18,12 +22,12 @@ public:
     ~MajorApplicationWindow();
 
 private slots:
-    void on_mainWindowPushButton_clicked();
-
-    void on_cryptoWindowPushButton_clicked();
 
 private:
     Ui::MajorApplicationWindow *ui;
+
+    MainStackedWidget *mainStackedWidget;
+    CryptoStackedWidget *cryptoStackedWidget;
 };
 
 #endif // MAJOR_APPLICATION_WINDOW_H

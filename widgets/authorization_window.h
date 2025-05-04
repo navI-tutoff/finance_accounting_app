@@ -8,8 +8,8 @@
 #include <QRegularExpression>
 
 #include "major_application_window.h"
-#include "database.h"
-#include "user_session.h"
+#include "../data_structures/database.h"
+#include "../data_structures/user_session.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

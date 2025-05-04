@@ -1,10 +1,10 @@
-#include "authorization_window.h"
-#include "major_application_window.h"
+#include "widgets/major_application_window.h"
+#include "widgets/authorization_window.h"
 
 #include <QApplication>
 #include <QFile>
 
-#include "database.h"
+#include "data_structures/database.h"
 
 
 QString readTextFile(QString path) {
@@ -31,7 +31,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    AuthorizationWindow w;
+    // AuthorizationWindow w;
+    // w.show();
+
+    MajorApplicationWindow w;
     w.show();
     return a.exec();
 }
