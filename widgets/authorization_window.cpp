@@ -88,5 +88,8 @@ void AuthorizationWindow::on_signUpButton_clicked() {
     if (singUpQuery.exec()) {
         ui->infoLabel->setStyleSheet("color: green");
         ui->infoLabel->setText("Вы успешно зарегистрировались");
+    } else {
+        ui->infoLabel->setStyleSheet("color: red");
+        ui->infoLabel->setText("Что-то пошло не так");
     }
 }

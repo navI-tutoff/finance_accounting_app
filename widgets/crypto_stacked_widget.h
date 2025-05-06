@@ -22,6 +22,13 @@ public:
     explicit CryptoStackedWidget(QWidget *parent = nullptr);
     ~CryptoStackedWidget();
 
+private slots:
+    void on_addCoinButton_clicked();
+
+    void on_editCoinButton_clicked();
+
+    void on_deleteCoinButton_clicked();
+
 private:
     void loadDataFromDB();
     void fetchPriceForCoin(const QString &coin, const size_t &coin_row);

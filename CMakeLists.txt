@@ -31,6 +31,10 @@ set(PROJECT_SOURCES
         widgets/crypto_stacked_widget.cpp
         widgets/crypto_stacked_widget.ui
 
+        widgets/add_cryptocoin_dialog.h
+        widgets/add_cryptocoin_dialog.cpp
+        widgets/add_cryptocoin_dialog.ui
+
         data_structures/database.h
         data_structures/database.cpp
 
@@ -62,11 +66,16 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         widgets/crypto_stacked_widget.cpp
         widgets/crypto_stacked_widget.ui
 
+        widgets/add_cryptocoin_dialog.h
+        widgets/add_cryptocoin_dialog.cpp
+        widgets/add_cryptocoin_dialog.ui
+
         data_structures/database.h
         data_structures/database.cpp
 
         data_structures/user_session.h
         data_structures/user_session.cpp
+
         notes.md
     )
 # Define target properties for Android with Qt 6 as:

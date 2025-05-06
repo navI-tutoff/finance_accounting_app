@@ -4,6 +4,10 @@
 #include <QSqlError>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QPushButton>
+#include <QDialog>
+
+#include "add_cryptocoin_dialog.h"
 
 enum Columns  {
     Coin,
@@ -36,7 +40,7 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     updatePriceTimer->start();
 
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    // ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
@@ -121,3 +125,32 @@ void CryptoStackedWidget::fetchPriceForAllCoins() {
 CryptoStackedWidget::~CryptoStackedWidget() {
     delete ui;
 }
+
+void CryptoStackedWidget::on_addCoinButton_clicked() {
+    AddCryptocoinDialog *addCryptocoinDialog = new AddCryptocoinDialog(this);
+
+
+
+    addCryptocoinDialog->show();
+
+    connect(addCryptocoinDialog, &AddCryptocoinDialog::accepted, [=](){
+        qDebug() << addCryptocoinDialog->getCoinName();
+        qDebug() << addCryptocoinDialog->getVolume();
+        qDebug() << addCryptocoinDialog->getAvgBuyPrice();
+    });
+
+
+
+
+
+
+    // QSqlQuery addCoinQuery;
+    // addCoinQuery.prepare("");
+
+    // loadDataFromDB();
+    // fetchPriceForAllCoins();
+}
+
+void CryptoStackedWidget::on_editCoinButton_clicked() {}
+
+void CryptoStackedWidget::on_deleteCoinButton_clicked() {}
