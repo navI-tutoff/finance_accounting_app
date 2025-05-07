@@ -54,6 +54,8 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
 
     connect(ui->cryptoWindowPushButton, &QPushButton::clicked, this, [=]() {
         ui->basicStackedWidget->setCurrentWidget(cryptoStackedWidget);
+        cryptoStackedWidget->loadDataFromDB();
+        cryptoStackedWidget->fetchPriceForAllCoins();
     });
 
     // QSqlQuery query(Database::instance().database());

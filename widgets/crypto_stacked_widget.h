@@ -29,7 +29,7 @@ private slots:
 
     void on_deleteCoinButton_clicked();
 
-private:
+public:
     void loadDataFromDB();
     void fetchPriceForCoin(const QString &coin, const size_t &coin_row);
     void fetchPriceForAllCoins();

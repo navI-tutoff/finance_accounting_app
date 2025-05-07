@@ -10,6 +10,9 @@
     <height>300</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::FocusPolicy::NoFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
@@ -90,8 +93,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="okButton">
+       <property name="focusPolicy">
+        <enum>Qt::FocusPolicy::NoFocus</enum>
+       </property>
        <property name="text">
         <string>Готово</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
