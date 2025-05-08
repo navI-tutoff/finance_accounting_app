@@ -31,9 +31,9 @@ set(PROJECT_SOURCES
         widgets/crypto_stacked_widget.cpp
         widgets/crypto_stacked_widget.ui
 
-        widgets/add_and_edit_cryptocoin_dialog.h
-        widgets/add_and_edit_cryptocoin_dialog.cpp
-        widgets/add_and_edit_cryptocoin_dialog.ui
+        widgets/interaction_with_cryptocoin_dialog.h
+        widgets/interaction_with_cryptocoin_dialog.cpp
+        widgets/interaction_with_cryptocoin_dialog.ui
 
         data_structures/database.h
         data_structures/database.cpp
@@ -66,9 +66,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         widgets/crypto_stacked_widget.cpp
         widgets/crypto_stacked_widget.ui
 
-        widgets/add_and_edit_cryptocoin_dialog.h
-        widgets/add_and_edit_cryptocoin_dialog.cpp
-        widgets/add_and_edit_cryptocoin_dialog.ui
+        widgets/interaction_with_cryptocoin_dialog.h
+        widgets/interaction_with_cryptocoin_dialog.cpp
+        widgets/interaction_with_cryptocoin_dialog.ui
 
         data_structures/database.h
         data_structures/database.cpp

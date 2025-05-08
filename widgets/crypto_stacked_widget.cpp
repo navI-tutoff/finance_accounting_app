@@ -8,7 +8,7 @@
 #include <QDialog>
 #include <QMessageBox>
 
-#include "add_and_edit_cryptocoin_dialog.h"
+#include "interaction_with_cryptocoin_dialog.h"
 
 enum Columns  {
     Coin,
@@ -128,12 +128,12 @@ CryptoStackedWidget::~CryptoStackedWidget() {
 }
 
 void CryptoStackedWidget::on_addCoinButton_clicked() {
-    AddAndEditCryptocoinDialog *addCryptocoinDialog = new AddAndEditCryptocoinDialog(this);
+    InteractionCryptocoinDialog *addCryptocoinDialog = new InteractionCryptocoinDialog(this);
     addCryptocoinDialog->setTextLabel("Добавление новой монеты");
 
     addCryptocoinDialog->show();
 
-    connect(addCryptocoinDialog, &AddAndEditCryptocoinDialog::accepted, this, [=](){
+    connect(addCryptocoinDialog, &InteractionCryptocoinDialog::accepted, this, [=](){
         QSqlQuery addCoinQuery;
         addCoinQuery.prepare("INSERT INTO crypto (user_id, coin, volume, avg_buy_price) "
                              "VALUES (:user_id, :coin, :volume, :avg_buy_price);");
@@ -151,13 +151,13 @@ void CryptoStackedWidget::on_addCoinButton_clicked() {
         fetchPriceForAllCoins();
     });
 
-    connect(addCryptocoinDialog, &AddAndEditCryptocoinDialog::rejected, this, [=](){
+    connect(addCryptocoinDialog, &InteractionCryptocoinDialog::rejected, this, [=](){
         addCryptocoinDialog->close();
     });
 }
 
 void CryptoStackedWidget::on_editCoinButton_clicked() {
-    AddAndEditCryptocoinDialog *editCryptocoinDialog = new AddAndEditCryptocoinDialog(this);
+    InteractionCryptocoinDialog *editCryptocoinDialog = new InteractionCryptocoinDialog(this);
     editCryptocoinDialog->setTextLabel("Редактирование статистики");
 
     QSqlQuery neccessaryCoinSelectQuery;
@@ -186,13 +186,13 @@ void CryptoStackedWidget::on_editCoinButton_clicked() {
     editCryptocoinDialog->setAvgBuyPrice(neccessaryCoinSelectQuery.value("avg_buy_price").toDouble());
 
     QString oldCoinName = editCryptocoinDialog->getCoinName();
-    editCryptocoinDialog->setCoinNameLineEditText(editCryptocoinDialog->getCoinName());
-    editCryptocoinDialog->setVolumeLineEditText(QString::number(editCryptocoinDialog->getVolume()));
-    editCryptocoinDialog->setAvgBuyPriceLineEditText(QString::number(editCryptocoinDialog->getAvgBuyPrice()));
+    editCryptocoinDialog->coinNameLineEdit()->setText(editCryptocoinDialog->getCoinName());
+    editCryptocoinDialog->volumeLineEdit()->setText(QString::number(editCryptocoinDialog->getVolume()));
+    editCryptocoinDialog->avgBuyPriceLineEdit()->setText(QString::number(editCryptocoinDialog->getAvgBuyPrice()));
 
     editCryptocoinDialog->show();
 
-    connect(editCryptocoinDialog, &AddAndEditCryptocoinDialog::accepted, this, [=](){
+    connect(editCryptocoinDialog, &InteractionCryptocoinDialog::accepted, this, [=](){
         QSqlQuery updateCoinQuery;
         updateCoinQuery.prepare("UPDATE crypto "
                                 "SET coin = :coin, volume = :volume, avg_buy_price = :avg_buy_price "
@@ -205,6 +205,7 @@ void CryptoStackedWidget::on_editCoinButton_clicked() {
 
         if (!updateCoinQuery.exec()) {
             QMessageBox::warning(this, "Ошибка", "Что-то пошло не так");
+            /// TODO ВАЖНО!!! Возможно, тут должно быть не this, а экземпляр AddAndEditCryptocoinDialog (пересмотреть всё остальное!!)
             return;
         }
 
@@ -212,9 +213,67 @@ void CryptoStackedWidget::on_editCoinButton_clicked() {
         fetchPriceForAllCoins();
     });
 
-    connect(editCryptocoinDialog, &AddAndEditCryptocoinDialog::rejected, this, [=](){
+    connect(editCryptocoinDialog, &InteractionCryptocoinDialog::rejected, this, [=](){
         editCryptocoinDialog->close();
     });
 }
 
-void CryptoStackedWidget::on_deleteCoinButton_clicked() {}
+void CryptoStackedWidget::on_deleteCoinButton_clicked() {
+    InteractionCryptocoinDialog *deleteCryptocoinDialog = new InteractionCryptocoinDialog(this);
+    deleteCryptocoinDialog->setTextLabel("Удаление выбранной монеты");
+    deleteCryptocoinDialog->okButton()->setText("Удалить");
+
+    QSqlQuery neccessaryCoinSelectQuery;
+    neccessaryCoinSelectQuery.prepare("SELECT * FROM crypto WHERE user_id = :id AND coin = :coin;");
+    neccessaryCoinSelectQuery.bindValue(":id", UserSession::instance().id());
+
+    QModelIndexList selectedRowsList = ui->tableView->selectionModel()->selectedRows();
+    if (selectedRowsList.isEmpty()) {
+        QMessageBox::warning(this, "Ошибка", "Не выбрана ни одна строчка");
+        return;
+    }
+
+    auto selectedRow = selectedRowsList.first().row();
+    neccessaryCoinSelectQuery.bindValue(":coin", ui->tableView->model()
+                                                     ->data(QModelIndex(
+                                                         ui->tableView->model()->index(selectedRow, Columns::Coin)))
+                                                     .toString());
+    if (!neccessaryCoinSelectQuery.exec()) {
+        QMessageBox::warning(this, "Ошибка", "Что-то пошло не так");
+        return;
+    }
+
+    neccessaryCoinSelectQuery.next();
+    deleteCryptocoinDialog->setCoinName(neccessaryCoinSelectQuery.value("coin").toString());
+    deleteCryptocoinDialog->setVolume(neccessaryCoinSelectQuery.value("volume").toDouble());
+    deleteCryptocoinDialog->setAvgBuyPrice(neccessaryCoinSelectQuery.value("avg_buy_price").toDouble());
+
+    deleteCryptocoinDialog->coinNameLineEdit()->setText(deleteCryptocoinDialog->getCoinName());
+    deleteCryptocoinDialog->volumeLineEdit()->setText(QString::number(deleteCryptocoinDialog->getVolume()));
+    deleteCryptocoinDialog->avgBuyPriceLineEdit()->setText(QString::number(deleteCryptocoinDialog->getAvgBuyPrice()));
+
+    deleteCryptocoinDialog->coinNameLineEdit()->setReadOnly(true);
+    deleteCryptocoinDialog->volumeLineEdit()->setReadOnly(true);
+    deleteCryptocoinDialog->avgBuyPriceLineEdit()->setReadOnly(true);
+
+    deleteCryptocoinDialog->show();
+
+    connect(deleteCryptocoinDialog, &InteractionCryptocoinDialog::accepted, this, [=](){
+        QSqlQuery deleteCoinQuery;
+        deleteCoinQuery.prepare("DELETE FROM crypto WHERE user_id = :id AND coin = :coin;");
+        deleteCoinQuery.bindValue(":id", UserSession::instance().id());
+        deleteCoinQuery.bindValue(":coin", deleteCryptocoinDialog->getCoinName());
+
+        if (!deleteCoinQuery.exec()) {
+            QMessageBox::warning(this, "Ошибка", "Что-то пошло не так");
+            return;
+        }
+
+        loadDataFromDB();
+        fetchPriceForAllCoins();
+    });
+
+    connect(deleteCryptocoinDialog, &InteractionCryptocoinDialog::rejected, this, [=](){
+        deleteCryptocoinDialog->close();
+    });
+}

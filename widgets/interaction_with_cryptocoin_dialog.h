@@ -1,18 +1,20 @@
-#ifndef ADD_AND_EDIT_CRYPTOCOIN_DIALOG_H
-#define ADD_AND_EDIT_CRYPTOCOIN_DIALOG_H
+#ifndef INTERACTION_WITH_CRYPTOCOIN_DIALOG_H
+#define INTERACTION_WITH_CRYPTOCOIN_DIALOG_H
 
 #include <QDialog>
+#include <QLineEdit>
 
 namespace Ui {
 class AddCryptocoinDialog;
 }
 
-class AddAndEditCryptocoinDialog : public QDialog {
+// dialog class for add / edit / delete cryptocoin on crypto_stacked_widget tableView
+class InteractionCryptocoinDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit AddAndEditCryptocoinDialog(QWidget *parent = nullptr);
-    ~AddAndEditCryptocoinDialog();
+    explicit InteractionCryptocoinDialog(QWidget *parent = nullptr);
+    ~InteractionCryptocoinDialog();
 
     const QString& getCoinName() const;
     const double& getVolume() const;
@@ -24,11 +26,12 @@ public:
 
     void setTextLabel(const QString &text);
 
-    void setCoinNameLineEditText(const QString &coinNameLineEditText);
-    void setVolumeLineEditText(const QString &volumeLineEditText);
-    void setAvgBuyPriceLineEditText(const QString &avgBuyPriceLineEditText);
+    QLineEdit* coinNameLineEdit();
+    QLineEdit* volumeLineEdit();
+    QLineEdit* avgBuyPriceLineEdit();
 
-
+    QPushButton* okButton();
+    QPushButton* cancelButton();
 
 private slots:
     void on_okButton_clicked();
@@ -42,4 +45,4 @@ private:
     double avgBuyPrice{};
 };
 
-#endif // ADD_AND_EDIT_CRYPTOCOIN_DIALOG_H
+#endif // INTERACTION_WITH_CRYPTOCOIN_DIALOG_H
