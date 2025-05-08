@@ -21,16 +21,23 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="startPriceLabel">
         <property name="text">
-         <string>TextLabel</string>
+         <string>Начальная цена портфеля: </string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="currentPriceLabel">
         <property name="text">
-         <string>TextLabel</string>
+         <string>Текущая цена портфеля: </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="profitLabel">
+        <property name="text">
+         <string>Прибыль по портфелю: </string>
         </property>
        </widget>
       </item>

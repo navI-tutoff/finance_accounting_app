@@ -56,6 +56,7 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
         ui->basicStackedWidget->setCurrentWidget(cryptoStackedWidget);
         cryptoStackedWidget->loadDataFromDB();
         cryptoStackedWidget->fetchPriceForAllCoins();
+        cryptoStackedWidget->calculateTotalStatistic();
     });
 
     // QSqlQuery query(Database::instance().database());

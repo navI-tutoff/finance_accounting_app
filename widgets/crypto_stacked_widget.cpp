@@ -40,9 +40,33 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     fetchPriceForAllCoins();
     updatePriceTimer->start();
 
+    // interface design
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+// calculate all information about portfolio price and profit. Put info in labels
+void CryptoStackedWidget::calculateTotalStatistic() {
+    double startCost{};
+    double profit{};
+    double portfolioCost{};
+
+    auto modelRowsCount{ui->tableView->model()->rowCount()};
+    for (size_t row{}; row < modelRowsCount; row++) {
+        profit += ui->tableView->model()->data(QModelIndex(
+                  ui->tableView->model()->index(row, Columns::Profit))).toDouble();
+
+        portfolioCost += ui->tableView->model()->data(QModelIndex(
+                         ui->tableView->model()->index(row, Columns::TotalCost))).toDouble();
+
+        startCost += ui->tableView->model()->data(QModelIndex(
+                     ui->tableView->model()->index(row, Columns::Volume))).toDouble();
+    }
+
+    ui->startPriceLabel->setText("Начальная цена портфеля: " + QString::number(startCost) + " $");
+    ui->currentPriceLabel->setText("Текущая цена портфеля: " + QString::number(portfolioCost) + " $");
+    ui->profitLabel->setText("Прибыль по портфелю: " + QString::number(profit) + " $");
 }
 
 void CryptoStackedWidget::loadDataFromDB() {
@@ -113,6 +137,12 @@ void CryptoStackedWidget::fetchPriceForCoin(const QString &coin, const size_t &c
             double profitPercent = profit / volume * 100.0;
             model->item(coin_row, Columns::ProfitPercent)->setText(QString::number(profitPercent));
         }
+
+        delete dataBuffer;
+        // delete networkReply;
+        networkReply->deleteLater();
+
+        calculateTotalStatistic();
     });
 }
 
@@ -122,10 +152,7 @@ void CryptoStackedWidget::fetchPriceForAllCoins() {
     }
 }
 
-
-CryptoStackedWidget::~CryptoStackedWidget() {
-    delete ui;
-}
+// ================ interaction with cryptocoin (add, edit, delete) ================
 
 void CryptoStackedWidget::on_addCoinButton_clicked() {
     InteractionCryptocoinDialog *addCryptocoinDialog = new InteractionCryptocoinDialog(this);
@@ -276,4 +303,8 @@ void CryptoStackedWidget::on_deleteCoinButton_clicked() {
     connect(deleteCryptocoinDialog, &InteractionCryptocoinDialog::rejected, this, [=](){
         deleteCryptocoinDialog->close();
     });
+}
+
+CryptoStackedWidget::~CryptoStackedWidget() {
+    delete ui;
 }

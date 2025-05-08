@@ -24,15 +24,14 @@ public:
 
 private slots:
     void on_addCoinButton_clicked();
-
     void on_editCoinButton_clicked();
-
     void on_deleteCoinButton_clicked();
 
 public:
     void loadDataFromDB();
     void fetchPriceForCoin(const QString &coin, const size_t &coin_row);
     void fetchPriceForAllCoins();
+    void calculateTotalStatistic();
 
 private:
     Ui::CryptoStackedWidget *ui;
