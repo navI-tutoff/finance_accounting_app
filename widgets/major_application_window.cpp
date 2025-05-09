@@ -50,19 +50,19 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
 
     connect(ui->mainWindowPushButton, &QPushButton::clicked, this, [=]() {
         ui->basicStackedWidget->setCurrentWidget(mainStackedWidget);
+
+        QMap<QString, double> totalCryptoStatistic = cryptoStackedWidget->calculateTotalStatistic();
+        mainStackedWidget->saveTotalCryptoStatistic(totalCryptoStatistic);
     });
 
     connect(ui->cryptoWindowPushButton, &QPushButton::clicked, this, [=]() {
         ui->basicStackedWidget->setCurrentWidget(cryptoStackedWidget);
+
         cryptoStackedWidget->loadDataFromDB();
         cryptoStackedWidget->fetchPriceForAllCoins();
-        cryptoStackedWidget->calculateTotalStatistic();
+        QMap<QString, double> totalCryptoStatistic = cryptoStackedWidget->calculateTotalStatistic();
+        mainStackedWidget->saveTotalCryptoStatistic(totalCryptoStatistic);
     });
-
-    // QSqlQuery query(Database::instance().database());
-    // query.prepare("INSERT INTO crypto (id, user_id, coin, volume, avg_buy_price, current_price, amount) VALUES (1, 15, :coin, 2000, 4000, 4600, 1.14);");
-    // query.bindValue(":coin", "ETH");
-    // query.exec();
 }
 
 MajorApplicationWindow::~MajorApplicationWindow() {

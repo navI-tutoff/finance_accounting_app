@@ -31,7 +31,10 @@ public:
     void loadDataFromDB();
     void fetchPriceForCoin(const QString &coin, const size_t &coin_row);
     void fetchPriceForAllCoins();
-    void calculateTotalStatistic();
+    QMap<QString, double> calculateTotalStatistic();
+
+    const double& getCurrentTotalPortfolioCost() const;
+    const QVector<QPair<QString, double>> getCoinAndPriceVector() const;
 
 private:
     Ui::CryptoStackedWidget *ui;
