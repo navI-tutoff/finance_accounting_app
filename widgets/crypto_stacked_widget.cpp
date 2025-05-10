@@ -72,10 +72,13 @@ void CryptoStackedWidget::loadDataFromDB() {
         row << new QStandardItem(QString{"Загрузка"}); // profit
         row << new QStandardItem(QString{"Загрузка"}); // percentage profit
 
-
         model->appendRow(row);
     }
 }
+
+const QStandardItemModel* CryptoStackedWidget::getModel() const {
+    return this->model;
+};
 
 // calculate all information about portfolio price and profit. Put info in labels
 // returns Map {start cost, portfolio cost, profit}

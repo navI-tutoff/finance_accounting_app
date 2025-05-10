@@ -36,10 +36,8 @@ public:
     void fetchPriceForAllCoins();
     void calculateTotalStatistic();
 
-    const double& getCurrentTotalPortfolioCost() const;
-    const QVector<QPair<QString, double>> getCoinAndPriceVector() const;
-
     const QMap<QString, double>& getTotalCryptoStatMap() const;
+    const QStandardItemModel* getModel() const;
 
 private:
     Ui::CryptoStackedWidget *ui;

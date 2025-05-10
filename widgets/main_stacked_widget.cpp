@@ -3,7 +3,18 @@
 
 #include <QChart>
 #include <QChartView>
-#include <QLineSeries>
+#include <QPieSeries>
+
+enum Columns  {
+    Coin,
+    Volume,
+    AvgBuyPrice,
+    CurrentPrice,
+    Amount,
+    TotalCost, // current cost of the coin in the portfolio
+    Profit,
+    ProfitPercent
+};
 
 MainStackedWidget::MainStackedWidget(QWidget *parent)
     : QWidget(parent)
@@ -18,25 +29,53 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
 
     ui->totalBalanceLabel->setText("Стоимость портфеля: Загрузка...");
 
-    QLineSeries *lineSeries = new QLineSeries(this);
-    lineSeries->append(0, 2);
-    lineSeries->append(1, 3);
-    lineSeries->append(2, 5);
-    lineSeries->append(3, 4);
-    lineSeries->append(4, 7);
+    QVector<QPair<QString, double>> coinAndPriceVector{};
 
-    QChart *chart = new QChart();
-    chart->addSeries(lineSeries);
-    chart->legend()->setVisible(false);
+    // QPieSeries *pieCryptoSeries = new QPieSeries();
+    // pieCryptoSeries->append("ETH", .50);
+    // pieCryptoSeries->append("BTC", .25);
+    // pieCryptoSeries->append("LTC", .25);
 
-    ui->pieChartView->setChart(chart);
+
+
+    // QChart *chart = new QChart();
+    // chart->addSeries(pieCryptoSeries);
+    // chart->legend()->setVisible(false);
+
+    // ui->pieChartView->setChart(chart);
 }
 
-void MainStackedWidget::updateTotalCryptoStatistic(const QMap<QString, double> &totalCryptoStatMap) {
+void MainStackedWidget::updateTotalCryptoStatistic(const QMap<QString, double> &totalCryptoStatMap,
+                                                   const QStandardItemModel* cryptoModel) {
     qDebug() << totalCryptoStatMap;
     this->totalCryptoStatistic = totalCryptoStatMap;
 
-    this->ui->totalBalanceLabel->setText("Стоимость портфеля: " + QString::number(totalCryptoStatMap.value("portfolioCost")) + " $");
+    double portfolioCost{totalCryptoStatMap.value("portfolioCost")};
+    this->ui->totalBalanceLabel->setText("Стоимость портфеля: " + QString::number(portfolioCost) + " $");
+
+    // QVector<QPair<QString, double>> coinAndPriceVector{};
+    QPieSeries *pieCryptoSeries = new QPieSeries();
+    auto modelRowsCount{cryptoModel->rowCount()};
+    for (size_t row{}; row < modelRowsCount; row++) {
+        QString coinName{cryptoModel->data(QModelIndex(
+                                               cryptoModel->index(row, Columns::Coin))).toString()};
+
+        qreal coinPrice{cryptoModel->data(QModelIndex(
+                                              cryptoModel->index(row, Columns::TotalCost))).toReal()};
+        // coin price / total portfolio cost
+        qreal coinPercentage{coinPrice / portfolioCost};
+
+        pieCryptoSeries->append(coinName, coinPercentage);
+
+        QPieSlice *slice = pieCryptoSeries->slices().at(row);
+        slice->setLabelVisible();
+    }
+
+    QChart *chart = new QChart();
+    chart->addSeries(pieCryptoSeries);
+    // chart->legend()->setVisible(false);
+
+    ui->pieChartView->setChart(chart);
 }
 
 MainStackedWidget::~MainStackedWidget() {

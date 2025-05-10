@@ -7,6 +7,7 @@
 
 #include <QtCharts/QChartView>
 
+#include <QStandardItemModel>
 
 namespace Ui {
 class MainStackedWidget;
@@ -19,12 +20,14 @@ public:
     explicit MainStackedWidget(QWidget *parent = nullptr);
     ~MainStackedWidget();
 
-    void updateTotalCryptoStatistic(const QMap<QString, double> &totalCryptoStatMap);
+    void updateTotalCryptoStatistic(const QMap<QString, double> &totalCryptoStatMap,
+                                    const QStandardItemModel* cryptoModel);
 
 private:
     Ui::MainStackedWidget *ui;
 
-    QMap<QString, double> totalCryptoStatistic{};
+    QMap<QString, double> totalCryptoStatistic{}; // 1. "portfolioCost"; 2. "profit"; 3. "startCost"
+    const QStandardItemModel* cryptoModel{};
 };
 
 #endif // MAIN_STACKED_WIDGET_H
