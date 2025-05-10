@@ -48,20 +48,20 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
     ui->basicStackedWidget->addWidget(mainStackedWidget);
     ui->basicStackedWidget->addWidget(cryptoStackedWidget);
 
+    connect(cryptoStackedWidget, &CryptoStackedWidget::allPricesFetched, this, [=](){
+        mainStackedWidget->updateTotalCryptoStatistic(cryptoStackedWidget->getTotalCryptoStatMap());
+    });
+
     connect(ui->mainWindowPushButton, &QPushButton::clicked, this, [=]() {
         ui->basicStackedWidget->setCurrentWidget(mainStackedWidget);
-
-        QMap<QString, double> totalCryptoStatistic = cryptoStackedWidget->calculateTotalStatistic();
-        mainStackedWidget->saveTotalCryptoStatistic(totalCryptoStatistic);
     });
 
     connect(ui->cryptoWindowPushButton, &QPushButton::clicked, this, [=]() {
         ui->basicStackedWidget->setCurrentWidget(cryptoStackedWidget);
 
-        cryptoStackedWidget->loadDataFromDB();
-        cryptoStackedWidget->fetchPriceForAllCoins();
-        QMap<QString, double> totalCryptoStatistic = cryptoStackedWidget->calculateTotalStatistic();
-        mainStackedWidget->saveTotalCryptoStatistic(totalCryptoStatistic);
+        // cryptoStackedWidget->loadDataFromDB();
+        // cryptoStackedWidget->fetchPriceForAllCoins();
+        // mainStackedWidget->saveTotalCryptoStatistic(cryptoStackedWidget->calculateTotalStatistic());
     });
 }
 

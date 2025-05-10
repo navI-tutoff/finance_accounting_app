@@ -22,6 +22,9 @@ public:
     explicit CryptoStackedWidget(QWidget *parent = nullptr);
     ~CryptoStackedWidget();
 
+signals:
+    void allPricesFetched();
+
 private slots:
     void on_addCoinButton_clicked();
     void on_editCoinButton_clicked();
@@ -29,12 +32,14 @@ private slots:
 
 public:
     void loadDataFromDB();
-    void fetchPriceForCoin(const QString &coin, const size_t &coin_row);
+    void fetchPriceForCoin(const QString &coin, const size_t &coinRow, const size_t &numberOfCoins);
     void fetchPriceForAllCoins();
-    QMap<QString, double> calculateTotalStatistic();
+    void calculateTotalStatistic();
 
     const double& getCurrentTotalPortfolioCost() const;
     const QVector<QPair<QString, double>> getCoinAndPriceVector() const;
+
+    const QMap<QString, double>& getTotalCryptoStatMap() const;
 
 private:
     Ui::CryptoStackedWidget *ui;
@@ -44,6 +49,10 @@ private:
     QNetworkAccessManager *networkManager;
 
     QTimer *updatePriceTimer;
+
+    size_t completedRequests{}; // counts coins' fetches requests
+
+    QMap<QString, double> totalCryptoStatMap;
 };
 
 #endif // CRYPTO_STACKED_WIDGET_H

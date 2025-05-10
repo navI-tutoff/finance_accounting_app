@@ -19,7 +19,7 @@ public:
     explicit MainStackedWidget(QWidget *parent = nullptr);
     ~MainStackedWidget();
 
-    void saveTotalCryptoStatistic(QMap<QString, double> map);
+    void updateTotalCryptoStatistic(const QMap<QString, double> &totalCryptoStatMap);
 
 private:
     Ui::MainStackedWidget *ui;

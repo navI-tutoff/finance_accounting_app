@@ -37,14 +37,14 @@ bool Database::connect(const QString &hostName, const QString &dbName,
         return false;
     }
 
-    qDebug() << "Successfull database connection";
+    // qDebug() << "Successfull database connection";
     return true;
 }
 
 void Database::disconnect() {
     if (m_database.isOpen()) {
         m_database.close();
-        qDebug() << "Database connection closed";
+        // qDebug() << "Database connection closed";
     }
 }
 

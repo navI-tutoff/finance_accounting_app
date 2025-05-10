@@ -16,8 +16,7 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
     /// Умножить на 100. Так получаем %-ное соотношение стоимости монеты к общей стоимости портфеля
     ///
 
-    double portfolioCost = this->totalCryptoStatistic.value("portfolioCost");
-    ui->totalBalanceLabel->setText("Общая стоимость портфеля: " + QString::number(portfolioCost) + " $");
+    ui->totalBalanceLabel->setText("Стоимость портфеля: Загрузка...");
 
     QLineSeries *lineSeries = new QLineSeries(this);
     lineSeries->append(0, 2);
@@ -33,9 +32,11 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
     ui->pieChartView->setChart(chart);
 }
 
-void MainStackedWidget::saveTotalCryptoStatistic(QMap<QString, double> map) {
-    qDebug() << map;
-    this->totalCryptoStatistic = map;
+void MainStackedWidget::updateTotalCryptoStatistic(const QMap<QString, double> &totalCryptoStatMap) {
+    qDebug() << totalCryptoStatMap;
+    this->totalCryptoStatistic = totalCryptoStatMap;
+
+    this->ui->totalBalanceLabel->setText("Стоимость портфеля: " + QString::number(totalCryptoStatMap.value("portfolioCost")) + " $");
 }
 
 MainStackedWidget::~MainStackedWidget() {

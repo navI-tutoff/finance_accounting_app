@@ -46,34 +46,6 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
-// calculate all information about portfolio price and profit. Put info in labels
-// returns Map {start cost, portfolio cost, profit}
-QMap<QString, double> CryptoStackedWidget::calculateTotalStatistic() {
-    double startCost{};
-    double portfolioCost{};
-    double profit{};
-
-    auto modelRowsCount{ui->tableView->model()->rowCount()};
-    for (size_t row{}; row < modelRowsCount; row++) {
-        profit += ui->tableView->model()->data(QModelIndex(
-                  ui->tableView->model()->index(row, Columns::Profit))).toDouble();
-
-        portfolioCost += ui->tableView->model()->data(QModelIndex(
-                         ui->tableView->model()->index(row, Columns::TotalCost))).toDouble();
-
-        startCost += ui->tableView->model()->data(QModelIndex(
-                     ui->tableView->model()->index(row, Columns::Volume))).toDouble();
-    }
-
-    ui->startPriceLabel->setText("Начальная цена портфеля: " + QString::number(startCost) + " $");
-    ui->currentPriceLabel->setText("Текущая цена портфеля: " + QString::number(portfolioCost) + " $");
-    ui->profitLabel->setText("Прибыль по портфелю: " + QString::number(profit) + " $");
-
-    return QMap<QString, double>{{"startCost", startCost},
-                                {"portfolioCost", portfolioCost},
-                                {"profit", profit}};
-}
-
 void CryptoStackedWidget::loadDataFromDB() {
     QSqlQuery selectQueryFromCryptoTable;
     selectQueryFromCryptoTable.prepare("SELECT coin, volume, avg_buy_price FROM crypto WHERE user_id = :id;");
@@ -94,8 +66,8 @@ void CryptoStackedWidget::loadDataFromDB() {
         row << new QStandardItem(QString{"Загрузка"}); // current price (need to fetch from API)
         // counting amount of coin
         row << new QStandardItem(QString::number(
-                                 selectQueryFromCryptoTable.value("volume").toDouble() /
-                                 selectQueryFromCryptoTable.value("avg_buy_price").toDouble()));
+            selectQueryFromCryptoTable.value("volume").toDouble() /
+            selectQueryFromCryptoTable.value("avg_buy_price").toDouble()));
         row << new QStandardItem(QString{"Загрузка"}); // current cost
         row << new QStandardItem(QString{"Загрузка"}); // profit
         row << new QStandardItem(QString{"Загрузка"}); // percentage profit
@@ -105,7 +77,41 @@ void CryptoStackedWidget::loadDataFromDB() {
     }
 }
 
-void CryptoStackedWidget::fetchPriceForCoin(const QString &coin, const size_t &coin_row) {
+// calculate all information about portfolio price and profit. Put info in labels
+// returns Map {start cost, portfolio cost, profit}
+void CryptoStackedWidget::calculateTotalStatistic() {
+    double startCost{};
+    double portfolioCost{};
+    double profit{};
+
+    auto modelRowsCount{ui->tableView->model()->rowCount()};
+    for (size_t row{}; row < modelRowsCount; row++) {
+        profit += ui->tableView->model()->data(QModelIndex(
+                  ui->tableView->model()->index(row, Columns::Profit))).toDouble();
+
+        portfolioCost += ui->tableView->model()->data(QModelIndex(
+                         ui->tableView->model()->index(row, Columns::TotalCost))).toDouble();
+
+        startCost += ui->tableView->model()->data(QModelIndex(
+                     ui->tableView->model()->index(row, Columns::Volume))).toDouble();
+    }
+
+    ui->startPriceLabel->setText("Начальная цена портфеля: " + QString::number(startCost) + " $");
+    ui->currentPriceLabel->setText("Текущая цена портфеля: " + QString::number(portfolioCost) + " $");
+    ui->profitLabel->setText("Прибыль по портфелю: " + QString::number(profit) + " $");
+
+    this->totalCryptoStatMap = {{"startCost", startCost},
+                                {"portfolioCost", portfolioCost},
+                                {"profit", profit}};
+}
+
+const QMap<QString, double>& CryptoStackedWidget::getTotalCryptoStatMap() const {
+    return this->totalCryptoStatMap;
+}
+
+void CryptoStackedWidget::fetchPriceForCoin(const QString &coin,
+                                            const size_t &coinRow,
+                                            const size_t &numberOfCoins) {
     QString API_URL_STR{"https://www.binance.com/api/v3/ticker/price?symbol="};
     API_URL_STR += coin + "USDT";
     const QUrl API_URL(API_URL_STR);
@@ -119,7 +125,7 @@ void CryptoStackedWidget::fetchPriceForCoin(const QString &coin, const size_t &c
         dataBuffer->append(networkReply->readAll());
     });
 
-    connect(networkReply, &QNetworkReply::finished, this, [this, coin_row, networkReply, dataBuffer](){
+    connect(networkReply, &QNetworkReply::finished, this, [this, coinRow, networkReply, dataBuffer, numberOfCoins](){
         if (networkReply->error()) {
             qDebug() << "[ERROR] " << networkReply->errorString();
         } else {
@@ -128,32 +134,38 @@ void CryptoStackedWidget::fetchPriceForCoin(const QString &coin, const size_t &c
             QJsonObject objectDoc = doc.toVariant().toJsonObject();
             QVariantMap map = objectDoc.toVariantMap();
             QString currentPrice = map["price"].toString();
-            model->item(coin_row, Columns::CurrentPrice)->setText(currentPrice); // set column value for current price
+            model->item(coinRow, Columns::CurrentPrice)->setText(currentPrice); // set column value for current price
 
             // calculate our own total cost at the moment
-            double totalCost = model->item(coin_row, Columns::Amount)->text().toDouble() *
-                               model->item(coin_row, Columns::CurrentPrice)->text().toDouble();
-            model->item(coin_row, Columns::TotalCost)->setText(QString::number(totalCost));
+            double totalCost = model->item(coinRow, Columns::Amount)->text().toDouble() *
+                               model->item(coinRow, Columns::CurrentPrice)->text().toDouble();
+            model->item(coinRow, Columns::TotalCost)->setText(QString::number(totalCost));
 
             // calculate profit
-            double profit = totalCost - model->item(coin_row, Columns::Volume)->text().toDouble();
-            model->item(coin_row, Columns::Profit)->setText(QString::number(profit));
-            double volume = model->item(coin_row, Columns::Volume)->text().toDouble();
+            double profit = totalCost - model->item(coinRow, Columns::Volume)->text().toDouble();
+            model->item(coinRow, Columns::Profit)->setText(QString::number(profit));
+            double volume = model->item(coinRow, Columns::Volume)->text().toDouble();
             double profitPercent = profit / volume * 100.0;
-            model->item(coin_row, Columns::ProfitPercent)->setText(QString::number(profitPercent));
+            model->item(coinRow, Columns::ProfitPercent)->setText(QString::number(profitPercent));
+        }
+
+        this->completedRequests++;
+        if (numberOfCoins == completedRequests) { // all coins fetched
+            calculateTotalStatistic();
+
+            completedRequests = 0; // reset
+            emit CryptoStackedWidget::allPricesFetched();
         }
 
         delete dataBuffer;
-        // delete networkReply;
         networkReply->deleteLater();
-
-        calculateTotalStatistic();
     });
 }
 
 void CryptoStackedWidget::fetchPriceForAllCoins() {
-    for (size_t row{}; row < model->rowCount(); row++) {
-        fetchPriceForCoin(model->item(row, Columns::Coin)->text().toUpper(), row);
+    size_t numberOfCoins = model->rowCount();
+    for (size_t row{}; row < numberOfCoins; row++) {
+        fetchPriceForCoin(model->item(row, Columns::Coin)->text().toUpper(), row, numberOfCoins);
     }
 }
 

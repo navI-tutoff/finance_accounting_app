@@ -59,6 +59,9 @@
              <pointsize>10</pointsize>
             </font>
            </property>
+           <property name="text">
+            <string>danil123</string>
+           </property>
            <property name="placeholderText">
             <string>Логин</string>
            </property>
@@ -73,6 +76,9 @@
            </property>
            <property name="inputMethodHints">
             <set>Qt::InputMethodHint::ImhHiddenText|Qt::InputMethodHint::ImhNoAutoUppercase|Qt::InputMethodHint::ImhNoPredictiveText|Qt::InputMethodHint::ImhSensitiveData</set>
+           </property>
+           <property name="text">
+            <string>Danil123</string>
            </property>
            <property name="echoMode">
             <enum>QLineEdit::EchoMode::Password</enum>
