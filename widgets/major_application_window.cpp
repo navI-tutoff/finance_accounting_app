@@ -49,7 +49,7 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
     ui->basicStackedWidget->addWidget(cryptoStackedWidget);
 
     connect(cryptoStackedWidget, &CryptoStackedWidget::allPricesFetched, this, [=](){
-        mainStackedWidget->updateTotalCryptoStatistic(cryptoStackedWidget->getTotalCryptoStatMap(),
+        mainStackedWidget->updateTotalCryptoStatistics(cryptoStackedWidget->getTotalCryptoStatMap(),
                                                       cryptoStackedWidget->getModel());
     });
 

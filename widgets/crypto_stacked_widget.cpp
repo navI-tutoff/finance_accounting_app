@@ -25,7 +25,6 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::CryptoStackedWidget)
     , model(new QStandardItemModel(this))
-    , networkManager(new QNetworkAccessManager(this))
     , updatePriceTimer(new QTimer(this))
 {
     ui->setupUi(this);
@@ -121,6 +120,7 @@ void CryptoStackedWidget::fetchPriceForCoin(const QString &coin,
     QNetworkRequest request;
     request.setUrl(API_URL);
 
+    QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
     QNetworkReply *networkReply = networkManager->get(request);
     QByteArray *dataBuffer = new QByteArray;
 
@@ -136,6 +136,7 @@ void CryptoStackedWidget::fetchPriceForCoin(const QString &coin,
             QJsonDocument doc = QJsonDocument::fromJson(*dataBuffer);
             QJsonObject objectDoc = doc.toVariant().toJsonObject();
             QVariantMap map = objectDoc.toVariantMap();
+
             QString currentPrice = map["price"].toString();
             model->item(coinRow, Columns::CurrentPrice)->setText(currentPrice); // set column value for current price
 

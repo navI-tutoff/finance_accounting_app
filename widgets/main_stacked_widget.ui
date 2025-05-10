@@ -29,7 +29,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Стоимость портфеля:: Загрузка... $</string>
+      <string>Стоимость портфеля: Загрузка... $</string>
      </property>
     </widget>
    </item>
@@ -38,12 +38,15 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QChartView" name="totalCostGraphView" native="true"/>
+        <widget class="QChartView" name="growLeaderChartView" native="true"/>
        </item>
        <item>
-        <widget class="QGroupBox" name="popularCurrenciesStatGroupBox">
-         <property name="title">
-          <string/>
+        <widget class="QTableView" name="popular24hStatTableView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>
