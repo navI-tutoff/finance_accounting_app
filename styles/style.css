@@ -1,5 +1,20 @@
 * {
 /*    font-family: 'Helvetica';*/
 /*    font-size: 14px;*/
-/*    background-color: white;*/
+    background-color: #212121;
+    color: #f4f4f4;
 }
+
+/*QHeaderView::section {
+    background-color: #2c2f33;
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+}
+
+QTableView {
+    background-color: #1e1e1e;
+    color: #dddddd;
+    gridline-color: #333;
+    selection-background-color: #444;
+}*/
