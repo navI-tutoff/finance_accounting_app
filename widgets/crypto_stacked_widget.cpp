@@ -25,6 +25,7 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::CryptoStackedWidget)
     , model(new QStandardItemModel(this))
+    , networkManager(new QNetworkAccessManager(this))
     , updatePriceTimer(new QTimer(this))
 {
     ui->setupUi(this);
@@ -32,11 +33,11 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     model->setHorizontalHeaderLabels({"Монета", "Объём", "Средняя цена покупки", "Цена", "Количество", "Стоимость", "Прибыль", "Прибыль %"});
     ui->tableView->setModel(model);
 
-    loadDataFromDB();
+    // loadDataFromDB();
 
     updatePriceTimer->setInterval(60000);
     connect(updatePriceTimer, &QTimer::timeout, this, &CryptoStackedWidget::fetchPriceForAllCoins);
-    fetchPriceForAllCoins();
+    // fetchPriceForAllCoins();
     updatePriceTimer->start();
 
     // interface design
@@ -114,22 +115,18 @@ const QMap<QString, double>& CryptoStackedWidget::getTotalCryptoStatMap() const 
 void CryptoStackedWidget::fetchPriceForCoin(const QString &coin,
                                             const size_t &coinRow,
                                             const size_t &numberOfCoins) {
-    QString API_URL_STR{"https://www.binance.com/api/v3/ticker/price?symbol="};
-    API_URL_STR += coin + "USDT";
+    QString API_URL_STR{"https://www.binance.com/api/v3/ticker/price?symbol=" + coin + "USDT"};
     const QUrl API_URL(API_URL_STR);
-    QNetworkRequest request;
-    request.setUrl(API_URL);
+    QNetworkRequest request(API_URL);
 
-    QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
     QNetworkReply *networkReply = networkManager->get(request);
     QByteArray *dataBuffer = new QByteArray;
-
     connect(networkReply, &QIODevice::readyRead, this, [this, networkReply, dataBuffer](){
         dataBuffer->append(networkReply->readAll());
     });
 
-    connect(networkReply, &QNetworkReply::finished, this, [this, coinRow, networkReply, dataBuffer, numberOfCoins](){
-        if (networkReply->error()) {
+    connect(networkReply, &QNetworkReply::finished, this, [this, networkReply, coinRow, numberOfCoins, dataBuffer](){
+        if (networkReply->error() != QNetworkReply::NoError) {
             qDebug() << "[ERROR] " << networkReply->errorString();
         } else {
             // turn the data into a json document
@@ -161,15 +158,16 @@ void CryptoStackedWidget::fetchPriceForCoin(const QString &coin,
             emit CryptoStackedWidget::allPricesFetched();
         }
 
-        delete dataBuffer;
         networkReply->deleteLater();
     });
 }
 
-void CryptoStackedWidget::fetchPriceForAllCoins() {
+void CryptoStackedWidget::fetchPriceForAllCoins() {    
     size_t numberOfCoins = model->rowCount();
     for (size_t row{}; row < numberOfCoins; row++) {
-        fetchPriceForCoin(model->item(row, Columns::Coin)->text().toUpper(), row, numberOfCoins);
+        QTimer::singleShot(100 * row, [=](){
+            fetchPriceForCoin(model->item(row, Columns::Coin)->text().toUpper(), row, numberOfCoins);
+        });
     }
 }
 

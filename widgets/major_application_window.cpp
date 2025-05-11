@@ -49,9 +49,20 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
     ui->basicStackedWidget->addWidget(cryptoStackedWidget);
 
     connect(cryptoStackedWidget, &CryptoStackedWidget::allPricesFetched, this, [=](){
-        mainStackedWidget->updateTotalCryptoStatistics(cryptoStackedWidget->getTotalCryptoStatMap(),
-                                                      cryptoStackedWidget->getModel());
+        mainStackedWidget->updateTotalCryptoStatistics(
+            cryptoStackedWidget->getTotalCryptoStatMap(),
+            cryptoStackedWidget->getModel()
+        );
+
+        mainStackedWidget->updateGrowthLeader(cryptoStackedWidget->getModel());
     });
+
+    cryptoStackedWidget->loadDataFromDB();
+    if (cryptoStackedWidget->getModel()->rowCount() > 0) {
+        cryptoStackedWidget->fetchPriceForAllCoins();
+    } else {
+        qDebug() << ">>> No coins loaded, skipping fetchPriceForAllCoins()";
+    }
 
     connect(ui->mainWindowPushButton, &QPushButton::clicked, this, [=]() {
         ui->basicStackedWidget->setCurrentWidget(mainStackedWidget);

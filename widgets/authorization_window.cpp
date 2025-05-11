@@ -1,10 +1,55 @@
 #include "./authorization_window.h"
 #include "./ui_authorization_window.h"
 
+#include <QNetworkReply>
+#include <QNetworkAccessManager>
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 AuthorizationWindow::AuthorizationWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::AuthorizationWindow) {
     ui->setupUi(this);
 
     ui->infoLabel->setStyleSheet("margin-left: auto;\nmargin-right: auto;");
+
+
+
+
+    // size_t counter{0};
+    // for (size_t i{}; i < 200; i++) {
+    //         counter++;
+    //     QString API_URL_STR{"https://www.binance.com/api/v3/ticker/price?symbol=ETHUSDT"};
+    //     const QUrl API_URL(API_URL_STR);
+    //     QNetworkRequest request;
+    //     request.setUrl(API_URL);
+
+    //     QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
+    //     QNetworkReply *networkReply = networkManager->get(request);
+
+    //     QByteArray *dataBuffer = new QByteArray;
+    //     connect(networkReply, &QIODevice::readyRead, this, [this, networkReply, dataBuffer](){
+    //         dataBuffer->append(networkReply->readAll());
+    //     });
+
+    //     connect(networkReply, &QNetworkReply::finished, this, [this, networkReply, dataBuffer, counter](){
+
+    //         if (networkReply->error() != QNetworkReply::NoError) {
+    //             qDebug() << "[ERROR] " << networkReply->errorString();
+    //         } else {
+    //             // turn the data into a json document
+    //             QJsonDocument doc = QJsonDocument::fromJson(*dataBuffer);
+    //             QJsonObject objectDoc = doc.toVariant().toJsonObject();
+    //             QVariantMap map = objectDoc.toVariantMap();
+
+    //             QString currentPrice = map["price"].toString();
+    //             qDebug() << "# " << counter << ". " << currentPrice;
+    //         }
+
+    //         networkReply->deleteLater();
+    //     });
+    // }
+
+    // qDebug() << counter;
 }
 
 AuthorizationWindow::~AuthorizationWindow() {

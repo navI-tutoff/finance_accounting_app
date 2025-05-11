@@ -39,7 +39,6 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
     ui->totalBalanceLabel->setText("Стоимость портфеля: Загрузка...");
 
     updatePopular24hStatistics();
-    updateGrowthLeader();
 
     // interface design
     ui->popular24hStatTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -49,7 +48,7 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
 
 void MainStackedWidget::updateTotalCryptoStatistics(const QMap<QString, double> &totalCryptoStatMap,
                                                     const QStandardItemModel* cryptoModel) {
-    this->totalCryptoStatistic = totalCryptoStatMap;
+    // this->totalCryptoStatistic = totalCryptoStatMap;
 
     double portfolioCost{totalCryptoStatMap.value("portfolioCost")};
     this->ui->totalBalanceLabel->setText("Стоимость портфеля: " + QString::number(portfolioCost) + " $");
@@ -126,12 +125,24 @@ void MainStackedWidget::updatePopular24hStatistics() {
     });
 }
 
-void MainStackedWidget::updateGrowthLeader() {
+void MainStackedWidget::updateGrowthLeader(const QStandardItemModel* cryptoModel) {
+    QVector<double> percentageChangeOfCoins{};
+    auto cryptoModelSize = cryptoModel->rowCount();
+    for (size_t row{}; row < cryptoModelSize; row++) {
+        percentageChangeOfCoins.append(cryptoModel->data(QModelIndex(cryptoModel->index(row, Columns::ProfitPercent))).toDouble());
+    }
+
+    std::sort(percentageChangeOfCoins.begin(), percentageChangeOfCoins.end(),
+            [](int a, int b){
+                return a < b;
+            });
+
+    qDebug() << percentageChangeOfCoins;
+
     QBarSet *set1 = new QBarSet("Coin1");
     QBarSet *set2 = new QBarSet("Coin2");
     QBarSet *set3 = new QBarSet("Coin3");
     QBarSet *set4 = new QBarSet("Coin4");
-    /// TODO вопрос в memory leak. Изучить контроль памяти в плане Charts
 
     *set1 << 15;
     *set2 << 11;

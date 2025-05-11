@@ -26,14 +26,14 @@ public:
     void updatePopular24hStatistics();
 
     // calculating the leader of growth from the portfolio, put it into Bar Chart
-    void updateGrowthLeader();
+    void updateGrowthLeader(const QStandardItemModel* cryptoModel);
 
 private:
     Ui::MainStackedWidget *ui;
 
     QStandardItemModel *popular24hStatModel;
 
-    QMap<QString, double> totalCryptoStatistic{}; // 1. "portfolioCost"; 2. "profit"; 3. "startCost"
+    // QMap<QString, double> totalCryptoStatistic{}; // 1. "portfolioCost"; 2. "profit"; 3. "startCost"
     // const QStandardItemModel* cryptoModel{};
 };
 

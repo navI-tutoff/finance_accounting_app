@@ -44,6 +44,8 @@ private:
 
     QStandardItemModel *model;
 
+    QNetworkAccessManager *networkManager;
+
     QTimer *updatePriceTimer;
 
     size_t completedRequests{}; // counts coins' fetches requests
