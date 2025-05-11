@@ -8,6 +8,7 @@
 #include <QtCharts/QChartView>
 
 #include <QStandardItemModel>
+#include <QNetworkAccessManager>
 
 namespace Ui {
 class MainStackedWidget;
@@ -30,6 +31,8 @@ public:
 
 private:
     Ui::MainStackedWidget *ui;
+
+    QNetworkAccessManager *networkManager;
 
     QStandardItemModel *popular24hStatModel;
 

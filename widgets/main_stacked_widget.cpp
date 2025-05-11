@@ -29,6 +29,7 @@ enum Columns  {
 MainStackedWidget::MainStackedWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MainStackedWidget)
+    , networkManager(new QNetworkAccessManager(this))
     , popular24hStatModel(new QStandardItemModel(this))
 {
     ui->setupUi(this);
@@ -88,7 +89,6 @@ void MainStackedWidget::updatePopular24hStatistics() {
     QNetworkRequest request;
     request.setUrl(API_URL);
 
-    QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
     QNetworkReply *networkReply = networkManager->get(request);
     QByteArray *dataBuffer = new QByteArray;
 
@@ -126,55 +126,66 @@ void MainStackedWidget::updatePopular24hStatistics() {
 }
 
 void MainStackedWidget::updateGrowthLeader(const QStandardItemModel* cryptoModel) {
-    QVector<double> percentageChangeOfCoins{};
+    QString API_URL_STR{"https://www.binance.com/api/v3/ticker/24hr?symbols=["};
+
     auto cryptoModelSize = cryptoModel->rowCount();
     for (size_t row{}; row < cryptoModelSize; row++) {
-        percentageChangeOfCoins.append(cryptoModel->data(QModelIndex(cryptoModel->index(row, Columns::ProfitPercent))).toDouble());
+        auto coin = cryptoModel->data(QModelIndex(cryptoModel->index(row, Columns::Coin))).toString();
+        API_URL_STR += "\"" + coin + "USDT\"";
+
+        if (row != cryptoModelSize - 1) { API_URL_STR += ","; }
     }
+    API_URL_STR += "]";
 
-    std::sort(percentageChangeOfCoins.begin(), percentageChangeOfCoins.end(),
-            [](int a, int b){
-                return a < b;
-            });
+    const QUrl API_URL{API_URL_STR};
+    QNetworkRequest request(API_URL);
 
-    qDebug() << percentageChangeOfCoins;
+    QNetworkReply *networkReply = networkManager->get(request);
+    QByteArray *dataBuffer = new QByteArray;
 
-    QBarSet *set1 = new QBarSet("Coin1");
-    QBarSet *set2 = new QBarSet("Coin2");
-    QBarSet *set3 = new QBarSet("Coin3");
-    QBarSet *set4 = new QBarSet("Coin4");
+    connect(networkReply, &QIODevice::readyRead, this, [this, networkReply, dataBuffer](){
+        dataBuffer->append(networkReply->readAll());
+    });
 
-    *set1 << 15;
-    *set2 << 11;
-    *set3 << 10;
-    *set4 << 02;
+    connect(networkReply, &QNetworkReply::finished, this, [this, networkReply, dataBuffer](){
+        if (networkReply->error()) {
+            qDebug() << "[ERROR] " << networkReply->errorString();
+        } else {
+            // turn the data into a json document
+            QJsonDocument doc = QJsonDocument::fromJson(*dataBuffer);
+            QJsonArray jsonArray = doc.array();
+            auto jsonArraySize = jsonArray.size();
 
-    QBarSeries *series = new QBarSeries();
-    series->append(set1);
-    series->append(set2);
-    series->append(set3);
-    series->append(set4);
+            QBarSeries *series = new QBarSeries();
+            for (size_t i{}; i < jsonArraySize; i++) {
+                QJsonObject objectDoc = jsonArray.at(i).toObject();
+                QVariantMap map = objectDoc.toVariantMap();
 
-    // QBarCategoryAxis *axisX = new QBarCategoryAxis();
-    // axisX->append("Лидеры роста");
+                QBarSet *set = new QBarSet(map["symbol"].toString());
+                *set << map["priceChangePercent"].toDouble();
 
-    QValueAxis *axisY = new QValueAxis();
-    axisY->setRange(0, 20);
+                series->append(set);
+            }
 
-    QChart *chart = new QChart();
-    chart->setTitle("Лидеры роста");
+            QValueAxis *axisY = new QValueAxis();
+            axisY->setRange(-5, 5);
 
-    chart->legend()->setVisible(true);
-    chart->legend()->setAlignment(Qt::AlignBottom);
-    chart->addSeries(series);
+            QChart *chart = new QChart();
+            chart->setTitle("Лидеры роста");
 
-    // chart->addAxis(axisX, Qt::AlignBottom);
-    // series->attachAxis(axisY);
+            chart->legend()->setVisible(true);
+            chart->legend()->setAlignment(Qt::AlignBottom);
+            chart->addSeries(series);
 
-    chart->addAxis(axisY, Qt::AlignLeft);
-    series->attachAxis(axisY);
+            chart->addAxis(axisY, Qt::AlignLeft);
+            series->attachAxis(axisY);
 
-    ui->growLeaderChartView->setChart(chart);
+            ui->growLeaderChartView->setChart(chart);
+        }
+
+        delete dataBuffer;
+        networkReply->deleteLater();
+    });
 }
 
 MainStackedWidget::~MainStackedWidget() {

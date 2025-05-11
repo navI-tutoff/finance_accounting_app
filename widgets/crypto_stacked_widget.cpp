@@ -165,7 +165,7 @@ void CryptoStackedWidget::fetchPriceForCoin(const QString &coin,
 void CryptoStackedWidget::fetchPriceForAllCoins() {    
     size_t numberOfCoins = model->rowCount();
     for (size_t row{}; row < numberOfCoins; row++) {
-        QTimer::singleShot(100 * row, [=](){
+        QTimer::singleShot(50 * row, [=](){
             fetchPriceForCoin(model->item(row, Columns::Coin)->text().toUpper(), row, numberOfCoins);
         });
     }
