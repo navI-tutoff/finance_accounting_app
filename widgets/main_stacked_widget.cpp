@@ -17,6 +17,8 @@
 
 #include <QStyledItemDelegate>
 
+#include "../styles/style_defines.cpp"
+
 enum Columns  {
     Coin,
     Volume,
@@ -52,12 +54,12 @@ public:
             finalHeight
         );
 
-        // painter->setPen(QPen(QColor("#f4f4f4"), 1));
+        // painter->setPen(QPen(niceWhiteColor, 1));
         // painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
         // painter->drawLine(option.rect.x(), option.rect.bottom() + 1, option.rect.right(), option.rect.bottom() + 1);
 
         double percentageChange = index.data().toDouble();
-        QColor color = percentageChange >= 0 ? QColor(39, 208, 127) : QColor(239, 69, 74);
+        QColor color = percentageChange >= 0 ? greenPriceColor : redPriceColor;
         QString sign = percentageChange >= 0 ? QString{"+"} : QString{""};
 
         painter->setRenderHint(QPainter::Antialiasing);
@@ -83,11 +85,11 @@ public:
                const QModelIndex &index) const override {
         painter->save();
 
-        // painter->setPen(QPen(QColor("#f4f4f4"), 1));
+        // painter->setPen(QPen(niceWhiteColor, 1));
         // painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
         // painter->drawLine(option.rect.x(), option.rect.bottom() + 1, option.rect.right(), option.rect.bottom() + 1);
 
-        painter->setPen(QColor("#f4f4f4"));
+        painter->setPen(warmWhiteColor);
         QFont curFont = painter->font();
         curFont.setBold(true);
         curFont.setPixelSize(13);
@@ -106,11 +108,11 @@ public:
                const QModelIndex &index) const override {
         painter->save();
 
-        // painter->setPen(QPen(QColor("#f4f4f4"), 1));
+        // painter->setPen(QPen(niceWhiteColor, 1));
         // painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
         // painter->drawLine(option.rect.x(), option.rect.bottom() + 1, option.rect.right(), option.rect.bottom() + 1);
 
-        painter->setPen(QColor("#f4f4f4"));
+        painter->setPen(warmWhiteColor);
         QFont curFont = painter->font();
         curFont.setBold(true);
         painter->setFont(curFont);
@@ -136,7 +138,7 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
 
     updatePopular24hStatistics();
 
-    // interface design
+    // *************** interface design ***************
 
 // ============================= ↓ Popular Statistic Table Settings ↓ =============================
     ui->popular24hStatTableView->setItemDelegateForColumn(0, new CoinNameDelegate(this));
@@ -176,6 +178,8 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
         }
         QHeaderView::section {
             background: transparent;
+            font: 15px;
+            font-weight: bold;
         }
         QTableCornerButton::section {
             background: transparent;
@@ -210,6 +214,7 @@ void MainStackedWidget::updateTotalCryptoStatistics(const QMap<QString, double> 
     }
 
     QChart *chart = new QChart();
+    chart->setBackgroundVisible(false);
     chart->addSeries(pieCryptoSeries);
     // chart->legend()->setVisible(false);
 
@@ -293,23 +298,52 @@ void MainStackedWidget::updateGrowthLeader(const QStandardItemModel* cryptoModel
             QJsonArray jsonArray = doc.array();
             auto jsonArraySize = jsonArray.size();
 
+            double min{std::numeric_limits<double>::max()};
+            double max{std::numeric_limits<double>::min()};
+
             QBarSeries *series = new QBarSeries();
             for (size_t i{}; i < jsonArraySize; i++) {
                 QJsonObject objectDoc = jsonArray.at(i).toObject();
                 QVariantMap map = objectDoc.toVariantMap();
 
-                QBarSet *set = new QBarSet(map["symbol"].toString());
-                *set << map["priceChangePercent"].toDouble();
+                QBarSet *set = new QBarSet(map["symbol"].toString().remove("USDT"));
+                auto value = map["priceChangePercent"].toDouble();
+                *set << value;
+
+                if (min > value) { min = value; }
+                if (max < value) { max = value; }
 
                 series->append(set);
             }
 
             QValueAxis *axisY = new QValueAxis();
-            axisY->setRange(-5, 5);
+            axisY->setRange(min, max);
+            axisY->applyNiceNumbers();
+            axisY->setGridLineColor(warmWhiteColor);
+            axisY->setLinePenColor(warmWhiteColor);
+            auto axisYFont = axisY->labelsFont();
+            axisYFont.setPixelSize(13);
+            axisY->setLabelsFont(axisYFont);
+            axisY->setLabelsColor(warmWhiteColor);
 
             QChart *chart = new QChart();
+            chart->setBackgroundVisible(false);
+
+            // title settings
+            QFont font = chart->font();
+            font.setPixelSize(15);
+            font.setBold(true);
+            chart->setTitleFont(font);
+            QBrush brush = chart->titleBrush();
+            brush.setColor(warmWhiteColor);
+            chart->setTitleBrush(brush);
             chart->setTitle("Лидеры роста");
 
+            // legend settings
+            chart->legend()->setLabelColor(warmWhiteColor);
+            font.setBold(false);
+            font.setPixelSize(13);
+            chart->legend()->setFont(font);
             chart->legend()->setVisible(true);
             chart->legend()->setAlignment(Qt::AlignBottom);
             chart->addSeries(series);
