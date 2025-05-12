@@ -10,8 +10,7 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
     , ui(new Ui::MajorApplicationWindow) {
     ui->setupUi(this);
 
-    // ui->qMain->setBaseSize(1900, 1000);
-    // ui->qMain->setStyleSheet("background-color: yellow");
+    this->resize(1580, 820);
 
 //     ui->cryptoWindowPushButton->setStyleSheet(R"(
 //     QPushButton {
@@ -25,22 +24,22 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
 //     }
 // )");
 
-//     ui->menuGroupBox->setStyleSheet(R"(
-//         QPushButton {
-//             background-color: #2c3e50;
-//             color: white;
-//             border: none;
-//             padding: 12px;
-//             text-align: left;
-//             font-size: 14px;
-//         }
-//         QPushButton:hover {
-//             background-color: #34495e;
-//         }
-//         QPushButton:checked {
-//             background-color: #1abc9c;
-//         }
-//     )");
+    ui->menuGroupBox->setStyleSheet(R"(
+        QPushButton {
+            background-color: #797979;
+            color: white;
+            border: none;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+        QPushButton:hover {
+            background-color: #a0a0a0;
+        }
+        QPushButton:checked {
+            background-color: #1abc9c;
+        }
+    )");
 
     mainStackedWidget = new MainStackedWidget(this);
     cryptoStackedWidget = new CryptoStackedWidget(this);
@@ -55,6 +54,7 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
         );
 
         mainStackedWidget->updateGrowthLeader(cryptoStackedWidget->getModel());
+        mainStackedWidget->updatePopular24hStatistics();
     });
 
     cryptoStackedWidget->loadDataFromDB();

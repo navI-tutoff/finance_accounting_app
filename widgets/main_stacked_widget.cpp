@@ -209,15 +209,23 @@ void MainStackedWidget::updateTotalCryptoStatistics(const QMap<QString, double> 
         pieCryptoSeries->append(coinName, coinPercentage);
 
         QPieSlice *slice = pieCryptoSeries->slices().at(row);
+        // slice settings
         slice->setLabelVisible();
+        slice->setLabelColor(warmWhiteColor);
+        QFont sliceLabelFont = slice->labelFont();
+        sliceLabelFont.setPixelSize(13);
+        slice->setLabelFont(sliceLabelFont);
+        // slice->setPen(Qt::NoPen);
         slice->setLabel(slice->label() + " " + QString::number(coinPercentage * 100, 'a', 1) + "%");
     }
 
     QChart *chart = new QChart();
+    // chart settings
     chart->setBackgroundVisible(false);
-    chart->addSeries(pieCryptoSeries);
-    // chart->legend()->setVisible(false);
+    chart->legend()->setVisible(false);
+    chart->setAnimationOptions(QChart::AllAnimations);
 
+    chart->addSeries(pieCryptoSeries);
     ui->pieChartView->setChart(chart);
 }
 
@@ -327,6 +335,7 @@ void MainStackedWidget::updateGrowthLeader(const QStandardItemModel* cryptoModel
             axisY->setLabelsColor(warmWhiteColor);
 
             QChart *chart = new QChart();
+            chart->setAnimationOptions(QChart::SeriesAnimations);
             chart->setBackgroundVisible(false);
 
             // title settings
@@ -337,7 +346,7 @@ void MainStackedWidget::updateGrowthLeader(const QStandardItemModel* cryptoModel
             QBrush brush = chart->titleBrush();
             brush.setColor(warmWhiteColor);
             chart->setTitleBrush(brush);
-            chart->setTitle("Лидеры роста");
+            chart->setTitle("Лидеры роста портфеля");
 
             // legend settings
             chart->legend()->setLabelColor(warmWhiteColor);
