@@ -28,87 +28,93 @@ enum Columns  {
     ProfitPercent
 };
 
-class CoinDelegate : public QStyledItemDelegate {
+class PercentageChangeCoinDelegate : public QStyledItemDelegate {
 public:
-    CoinDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {
-        // Предзагрузка иконок (предположим, что они лежат в ресурсах)
-        // icons["BTCUSDT"] = QPixmap(":/icons/btc.png");
-        // icons["ETHUSDT"] = QPixmap(":/icons/eth.png");
-        // icons["SOLUSDT"] = QPixmap(":/icons/sol.png");
-        // icons["MEMEUSDT"] = QPixmap(":/icons/meme.png");
-        // icons["ONDOUSDT"] = QPixmap(":/icons/ondo.png");
-    }
-
-    void paint(QPainter* painter, const QStyleOptionViewItem& option,
-               const QModelIndex& index) const override {
-        if (index.column() != 0) return;
-
-        painter->save();
-        QRect rect = option.rect;
-
-        QString symbol = index.data(Qt::DisplayRole).toString();
-        QString price = index.siblingAtColumn(1).data().toString();
-        QString percent = index.siblingAtColumn(2).data().toString();
-
-        // QPixmap icon = icons.value(symbol, QPixmap());
-
-        QColor percentColor = percent.contains('-') ? QColor("#FF4C4C") : QColor("#00D26A");
-
-        if (option.state & QStyle::State_MouseOver)
-            painter->fillRect(rect, QColor("#2E2E2E"));
-
-        // QRect iconRect(rect.left() + 6, rect.top() + 4, 32, 32);
-        // if (!icon.isNull())
-            // painter->drawPixmap(iconRect, icon.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-        painter->setPen(Qt::white);
-        painter->setFont(QFont("Segoe UI", 10, QFont::Bold));
-        painter->drawText(rect.left() + 44, rect.top() + 18, symbol);
-
-        painter->setFont(QFont("Segoe UI", 9));
-        painter->drawText(rect.right() - 140, rect.top() + 18, price);
-
-        painter->setPen(percentColor);
-        painter->drawText(rect.right() - 60, rect.top() + 18, percent);
-
-        painter->restore();
-    }
-
-    QSize sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const override {
-        return QSize(300, 40);
-    }
-
-private:
-    QMap<QString, QPixmap> icons;
-};
-
-class CoinTableDelegate : public QStyledItemDelegate {
-public:
-    CoinTableDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+    PercentageChangeCoinDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
 
     void paint(QPainter* painter, const QStyleOptionViewItem &option,
                 const QModelIndex &index) const override {
         painter->save();
 
-        /// TODO тут остановился. Играюсь с размерами фона у процентов
-        if (index.column() == 2) { // percentage change of coin
-            QRect rect = option.rect.adjusted(option.rect.width() * 0.25,
-                                              option.rect.height() * 0.1,
-                                              -option.rect.width() * 0.25,
-                                              -option.rect.height() * 0.1);
+        QRect fullRect = option.rect;
+        int minWidth = 50;
+        int maxWidth = 70;
+        int adjustedWidth = fullRect.width() * 0.5;
+        int finalWidth = qBound(minWidth, adjustedWidth, maxWidth); // value will be between -> [minWidth; maxWidth]
+        int paddingY = fullRect.height() * 0.1;
+        int finalHeight = fullRect.height() - 2 * paddingY;
 
-            double percentageChange = index.data().toDouble();
-            QColor color = percentageChange >= 0 ? QColor("#29dd87") : QColor("#ef454a");
-            QString sign = percentageChange >= 0 ? QString{"+"} : QString{""};
+        // setting up the rect for needed height and width and also centered
+        QRect rect(
+            fullRect.center().x() - finalWidth / 2,
+            fullRect.y() + paddingY,
+            finalWidth,
+            finalHeight
+        );
 
-            painter->setRenderHint(QPainter::Antialiasing);
-            painter->setBrush(color);
-            painter->setPen(Qt::NoPen);
-            painter->drawRoundedRect(rect, 3, 3);
+        // painter->setPen(QPen(QColor("#f4f4f4"), 1));
+        // painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
+        // painter->drawLine(option.rect.x(), option.rect.bottom() + 1, option.rect.right(), option.rect.bottom() + 1);
 
-            painter->setPen(Qt::white);
-            painter->drawText(rect, Qt::AlignCenter, sign + QString::number(percentageChange, 'f', 2) + "%");
-        }
+        double percentageChange = index.data().toDouble();
+        QColor color = percentageChange >= 0 ? QColor(39, 208, 127) : QColor(239, 69, 74);
+        QString sign = percentageChange >= 0 ? QString{"+"} : QString{""};
+
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setBrush(color);
+        painter->setPen(Qt::NoPen);
+        painter->drawRoundedRect(rect, 3, 3);
+
+        painter->setPen(Qt::white);
+        QFont curFont = painter->font();
+        curFont.setBold(true);
+        painter->setFont(curFont);
+        painter->drawText(rect, Qt::AlignCenter, sign + QString::number(percentageChange, 'f', 2) + "%");
+
+        painter->restore();
+    }
+};
+
+class CoinNameDelegate : public QStyledItemDelegate {
+public:
+    CoinNameDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        painter->save();
+
+        // painter->setPen(QPen(QColor("#f4f4f4"), 1));
+        // painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
+        // painter->drawLine(option.rect.x(), option.rect.bottom() + 1, option.rect.right(), option.rect.bottom() + 1);
+
+        painter->setPen(QColor("#f4f4f4"));
+        QFont curFont = painter->font();
+        curFont.setBold(true);
+        curFont.setPixelSize(13);
+        painter->setFont(curFont);
+        painter->drawText(option.rect, Qt::AlignLeft | Qt::AlignVCenter, index.data().toString().remove("USDT"));
+
+        painter->restore();
+    }
+};
+
+class CoinPriceDelegate : public QStyledItemDelegate {
+public:
+    CoinPriceDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        painter->save();
+
+        // painter->setPen(QPen(QColor("#f4f4f4"), 1));
+        // painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
+        // painter->drawLine(option.rect.x(), option.rect.bottom() + 1, option.rect.right(), option.rect.bottom() + 1);
+
+        painter->setPen(QColor("#f4f4f4"));
+        QFont curFont = painter->font();
+        curFont.setBold(true);
+        painter->setFont(curFont);
+        painter->drawText(option.rect, Qt::AlignRight | Qt::AlignVCenter, index.data().toString());
 
         painter->restore();
     }
@@ -131,18 +137,51 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
     updatePopular24hStatistics();
 
     // interface design
-    ui->popular24hStatTableView->setItemDelegateForColumn(2, new CoinTableDelegate(this));
+
+// ============================= ↓ Popular Statistic Table Settings ↓ =============================
+    ui->popular24hStatTableView->setItemDelegateForColumn(0, new CoinNameDelegate(this));
+    ui->popular24hStatTableView->setItemDelegateForColumn(1, new CoinPriceDelegate(this));
+    ui->popular24hStatTableView->setItemDelegateForColumn(2, new PercentageChangeCoinDelegate(this));
     // ui->popular24hStatTableView->setStyleSheet("QTableView { background-color: #1E1E1E; color: white; }");
     // ui->popular24hStatTableView->horizontalHeader()->setVisible(false);
 
     ui->popular24hStatTableView->setShowGrid(false);
+    // ui->popular24hStatTableView->setGridStyle(Qt::SolidLine);
     ui->popular24hStatTableView->setFrameShape(QFrame::NoFrame);
     ui->popular24hStatTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->popular24hStatTableView->verticalHeader()->setVisible(false);
     ui->popular24hStatTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    // ui->popular24hStatTableView->setSelectionMode(QAbstractItemView::NoSelection);
+    ui->popular24hStatTableView->setSelectionMode(QAbstractItemView::NoSelection);
     ui->popular24hStatTableView->resizeRowsToContents();
     ui->popular24hStatTableView->resizeColumnsToContents();
+    this->popular24hStatModel->setHeaderData(0, Qt::Horizontal, QVariant(Qt::AlignLeft | Qt::AlignVCenter), Qt::TextAlignmentRole);  // align 'coin' column to the left
+    this->popular24hStatModel->setHeaderData(1, Qt::Horizontal, QVariant(Qt::AlignRight | Qt::AlignVCenter), Qt::TextAlignmentRole); // align 'price' column to the right
+    // remove borders from horizontal header
+    ui->popular24hStatTableView->horizontalHeader()->setStyleSheet(R"(
+        QHeaderView::section {
+            border: none;
+        }
+    )");
+    // transparent table settings
+    ui->popular24hStatTableView->setStyleSheet(R"(
+        QTableView {
+            background: transparent;
+            border: none;
+        }
+        QTableView::item {
+            background: transparent;
+        }
+        QHeaderView {
+            background: transparent;
+        }
+        QHeaderView::section {
+            background: transparent;
+        }
+        QTableCornerButton::section {
+            background: transparent;
+        }
+    )");
+// ============================= ↑ Popular Statistic Table Settings ↑ =============================
 }
 
 void MainStackedWidget::updateTotalCryptoStatistics(const QMap<QString, double> &totalCryptoStatMap,
