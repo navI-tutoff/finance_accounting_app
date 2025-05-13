@@ -1,4 +1,9 @@
 <RCC>
+    <qresource prefix="/">
+        <file>assets/crypto_icon.png</file>
+        <file>assets/major_house_icon.png</file>
+        <file>assets/menu_icon.png</file>
+    </qresource>
     <qresource prefix="/styles">
         <file>styles/style.css</file>
         <file>styles/style_defines.cpp</file>

@@ -11,6 +11,38 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
     ui->setupUi(this);
 
     this->resize(1580, 820);
+    this->setWindowTitle("Приложение для учёта финансов");
+    this->setWindowIcon(QIcon{":/assets/crypto_icon.png"});
+
+    QIcon menuIcon{":/assets/menu_icon.png"};
+    ui->menuPushButton->setText("");
+    ui->menuPushButton->setIcon(menuIcon);
+    ui->menuPushButton->setIconSize(QSize(46, 46));
+    ui->menuPushButton->setCursor(Qt::PointingHandCursor);
+    ui->menuPushButton->setStyleSheet(R"(
+        background: transparent;
+        border: none;
+    )");
+
+    QIcon majorHouseIcon{":/assets/major_house_icon.png"};
+    ui->mainWindowPushButton->setText("");
+    ui->mainWindowPushButton->setIcon(majorHouseIcon);
+    ui->mainWindowPushButton->setIconSize(QSize(46, 46));
+    ui->mainWindowPushButton->setCursor(Qt::PointingHandCursor);
+    ui->mainWindowPushButton->setStyleSheet(R"(
+        background: transparent;
+        border: none;
+    )");
+
+    QIcon cryptoIcon{":/assets/crypto_icon.png"};
+    ui->cryptoWindowPushButton->setText("");
+    ui->cryptoWindowPushButton->setIcon(cryptoIcon);
+    ui->cryptoWindowPushButton->setIconSize(QSize(49, 49));
+    ui->cryptoWindowPushButton->setCursor(Qt::PointingHandCursor);
+    ui->cryptoWindowPushButton->setStyleSheet(R"(
+        background: transparent;
+        border: none;
+    )");
 
 //     ui->cryptoWindowPushButton->setStyleSheet(R"(
 //     QPushButton {
@@ -24,22 +56,27 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
 //     }
 // )");
 
-    ui->menuGroupBox->setStyleSheet(R"(
-        QPushButton {
-            background-color: #797979;
-            color: white;
-            border: none;
-            padding: 12px;
-            text-align: left;
-            font-size: 14px;
-        }
-        QPushButton:hover {
-            background-color: #a0a0a0;
-        }
-        QPushButton:checked {
-            background-color: #1abc9c;
-        }
+    // ui->menuFrame->setStyleSheet(R"(
+    //     QPushButton {
+    //         background-color: #797979;
+    //         color: white;
+    //         border: none;
+    //         padding: 12px;
+    //         text-align: left;
+    //         font-size: 14px;
+    //     }
+    //     QPushButton:hover {
+    //         background-color: #a0a0a0;
+    //     }
+    //     QPushButton:checked {
+    //         background-color: #1abc9c;
+    //     }
+    // )");
+
+    ui->menuFrame->setStyleSheet(R"(
+        background-color: #1f1f1f;
     )");
+
 
     mainStackedWidget = new MainStackedWidget(this);
     cryptoStackedWidget = new CryptoStackedWidget(this);
