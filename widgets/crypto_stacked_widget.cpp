@@ -8,7 +8,12 @@
 #include <QDialog>
 #include <QMessageBox>
 
+#include <QStyledItemDelegate>
+#include <QPainter>
+
 #include "interaction_with_cryptocoin_dialog.h"
+
+#include "../styles/style_defines.cpp"
 
 enum Columns  {
     Coin,
@@ -21,6 +26,199 @@ enum Columns  {
     ProfitPercent
 };
 
+namespace DelegateTools {
+    const QColor stateSelectedRowColor{58, 58, 58};
+
+    void setupMonoFont(QPainter *painter) {
+        QFont monoFont("DejaVu Sans Mono");
+        // monoFont.setPixelSize(13);
+        painter->setFont(monoFont);
+    }
+
+    void setupStateSelectedStyle(QPainter *painter, const QStyleOptionViewItem &option) {
+        if (option.state & QStyle::State_Selected) {
+            painter->fillRect(option.rect, stateSelectedRowColor);
+        }
+    }
+}
+using namespace DelegateTools;
+
+class CoinDelegate : public QStyledItemDelegate {
+public:
+    CoinDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        painter->save();
+
+        setupStateSelectedStyle(painter, option);
+
+        setupMonoFont(painter);
+
+        QFont curFont = painter->font();
+        curFont.setBold(true);
+        curFont.setPixelSize(13);
+        painter->setPen(QColor(51, 210, 110));
+        painter->setFont(curFont);
+        painter->drawText(option.rect, Qt::AlignCenter, index.data().toString());
+
+        painter->restore();
+    }
+};
+
+class VolumeDelegate : public QStyledItemDelegate {
+public:
+    VolumeDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        auto value = index.data().toDouble();
+
+        painter->save();
+
+        setupStateSelectedStyle(painter, option);
+
+        setupMonoFont(painter);
+
+        QString formattedString = QString("%1 $").arg(value, 6, 'f', 2); // 2 - precision
+
+        painter->drawText(option.rect, Qt::AlignCenter, formattedString);
+        painter->restore();
+    }
+};
+
+class AvgBuyPriceDelegate : public QStyledItemDelegate {
+public:
+    AvgBuyPriceDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        auto value = index.data().toDouble();
+
+        painter->save();
+
+        setupStateSelectedStyle(painter, option);
+
+        setupMonoFont(painter);
+
+        QString formattedString;
+        if (value < 0.01) { // if value too small, add precision
+            formattedString = QString("%1 $").arg(value, 10, 'f', 6);
+        } else {
+            formattedString = QString("%1 $").arg(value, 6, 'f', 2);
+        }
+
+        painter->drawText(option.rect, Qt::AlignCenter, formattedString);
+        painter->restore();
+    }
+};
+
+class AmountCurrentDelegate : public QStyledItemDelegate {
+public:
+    AmountCurrentDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        auto value = index.data().toDouble();
+
+        painter->save();
+
+        setupStateSelectedStyle(painter, option);
+
+        setupMonoFont(painter);
+
+        QString formattedString;
+        if (value < 0.01) { // if value too small, add precision
+            formattedString = QString("%1").arg(value, 10, 'f', 6);
+        } else {
+            formattedString = QString("%1").arg(value, 6, 'f', 2);
+        }
+
+        painter->drawText(option.rect, Qt::AlignCenter, formattedString);
+        painter->restore();
+    }
+};
+
+class CurrentCostDelegate : public QStyledItemDelegate {
+public:
+    CurrentCostDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        auto value = index.data().toDouble();
+
+        painter->save();
+
+        setupStateSelectedStyle(painter, option);
+
+        setupMonoFont(painter);
+
+        QString formattedString{QString("%1 $").arg(value, 6, 'f', 2)};
+
+        painter->drawText(option.rect, Qt::AlignCenter, formattedString);
+        painter->restore();
+    }
+};
+
+class profitDelegate : public QStyledItemDelegate {
+public:
+    profitDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        auto value = index.data().toDouble();
+
+        painter->save();
+
+        QColor color = value >= 0 ? QColor(46, 89, 46) : QColor(89, 46, 46);
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setBrush(color);
+        painter->setPen(Qt::NoPen);
+        painter->fillRect(option.rect, color);
+        painter->restore(); // after rect
+
+        painter->save();
+
+        setupStateSelectedStyle(painter, option);
+        setupMonoFont(painter);
+
+        QString formattedString{QString("%1 $").arg(value, 6, 'f', 2)};
+
+        painter->drawText(option.rect, Qt::AlignCenter, formattedString);
+        painter->restore();
+    }
+};
+
+class profitPercentageDelegate : public QStyledItemDelegate {
+public:
+    profitPercentageDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+    void paint(QPainter* painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override {
+        auto value = index.data().toDouble();
+
+        painter->save();
+
+        QColor color = value >= 0 ? QColor(46, 89, 46) : QColor(89, 46, 46);
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setBrush(color);
+        painter->setPen(Qt::NoPen);
+        painter->fillRect(option.rect, color);
+        painter->restore(); // after rect
+
+        painter->save();
+
+        setupStateSelectedStyle(painter, option);
+        setupMonoFont(painter);
+
+        // QString sign = value >= 0 ? QString{"+"} : QString{""};
+        QString formattedString{QString("%1 %").arg(value, 6, 'f', 2)};
+
+        painter->drawText(option.rect, Qt::AlignCenter, formattedString);
+        painter->restore();
+    }
+};
+
 CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::CryptoStackedWidget)
@@ -30,20 +228,41 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    model->setHorizontalHeaderLabels({"Монета", "Объём", "Средняя цена покупки", "Цена", "Количество", "Стоимость", "Прибыль", "Прибыль %"});
+    model->setHorizontalHeaderLabels({"Монета", "Объём", "Ср. цена покупки", "Цена", "Количество", "Стоимость", "Прибыль", "Прибыль, %"});
     ui->tableView->setModel(model);
-
-    // loadDataFromDB();
 
     updatePriceTimer->setInterval(60000);
     connect(updatePriceTimer, &QTimer::timeout, this, &CryptoStackedWidget::fetchPriceForAllCoins);
-    // fetchPriceForAllCoins();
     updatePriceTimer->start();
 
-    // interface design
+    // *************** interface design ***************
+
+// ============================= ↓ Crypto Table Settings ↓ =============================
+    ui->tableView->setItemDelegateForColumn(0, new CoinDelegate(this));
+    ui->tableView->setItemDelegateForColumn(1, new VolumeDelegate(this));
+    ui->tableView->setItemDelegateForColumn(2, new AvgBuyPriceDelegate(this));
+    ui->tableView->setItemDelegateForColumn(3, new AvgBuyPriceDelegate(this)); // same delegate
+    ui->tableView->setItemDelegateForColumn(4, new AmountCurrentDelegate(this));
+    ui->tableView->setItemDelegateForColumn(5, new CurrentCostDelegate(this));
+    ui->tableView->setItemDelegateForColumn(6, new profitDelegate(this));
+    ui->tableView->setItemDelegateForColumn(7, new profitPercentageDelegate(this));
+
+    // ui->tableView->setShowGrid(false);
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableView->setFrameShape(QFrame::Box);
+    ui->tableView->resizeRowsToContents();
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->setStyleSheet(R"(
+        QHeaderView::section {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    )");
+
+// ============================= ↑ Crypto Table Settings ↑ =============================
 }
 
 void CryptoStackedWidget::loadDataFromDB() {
@@ -206,6 +425,7 @@ void CryptoStackedWidget::on_editCoinButton_clicked() {
     InteractionCryptocoinDialog *editCryptocoinDialog = new InteractionCryptocoinDialog(this);
     editCryptocoinDialog->setTextLabel("Редактирование статистики");
 
+    /// TODO кажется, можно переписать функционал без лишнего Query. Брать все данные из model
     QSqlQuery neccessaryCoinSelectQuery;
     neccessaryCoinSelectQuery.prepare("SELECT * FROM crypto WHERE user_id = :id AND coin = :coin;");
     neccessaryCoinSelectQuery.bindValue(":id", UserSession::instance().id());

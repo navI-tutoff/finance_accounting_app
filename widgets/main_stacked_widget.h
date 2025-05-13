@@ -2,13 +2,13 @@
 #define MAIN_STACKED_WIDGET_H
 
 #include <QWidget>
-
-#include "../data_structures/user_session.h"
-
 #include <QtCharts/QChartView>
 
 #include <QStandardItemModel>
 #include <QNetworkAccessManager>
+
+#include "../styles/style_defines.h"
+#include "../data_structures/user_session.h"
 
 namespace Ui {
 class MainStackedWidget;

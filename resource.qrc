@@ -7,5 +7,6 @@
     <qresource prefix="/styles">
         <file>styles/style.css</file>
         <file>styles/style_defines.cpp</file>
+        <file>styles/style_defines.h</file>
     </qresource>
 </RCC>

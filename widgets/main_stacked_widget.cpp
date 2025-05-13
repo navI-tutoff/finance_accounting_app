@@ -17,8 +17,6 @@
 
 #include <QStyledItemDelegate>
 
-#include "../styles/style_defines.cpp"
-
 enum Columns  {
     Coin,
     Volume,
@@ -158,12 +156,6 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
     ui->popular24hStatTableView->resizeColumnsToContents();
     this->popular24hStatModel->setHeaderData(0, Qt::Horizontal, QVariant(Qt::AlignLeft | Qt::AlignVCenter), Qt::TextAlignmentRole);  // align 'coin' column to the left
     this->popular24hStatModel->setHeaderData(1, Qt::Horizontal, QVariant(Qt::AlignRight | Qt::AlignVCenter), Qt::TextAlignmentRole); // align 'price' column to the right
-    // remove borders from horizontal header
-    ui->popular24hStatTableView->horizontalHeader()->setStyleSheet(R"(
-        QHeaderView::section {
-            border: none;
-        }
-    )");
     // transparent table settings
     ui->popular24hStatTableView->setStyleSheet(R"(
         QTableView {
@@ -180,6 +172,7 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
             background: transparent;
             font: 15px;
             font-weight: bold;
+            border: none;
         }
         QTableCornerButton::section {
             background: transparent;

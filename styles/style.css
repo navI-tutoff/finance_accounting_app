@@ -3,8 +3,8 @@
 * {
 /*    font-family: 'Helvetica';*/
 /*    font-size: 14px;*/
-    background-color: #2e2e2e;
-    color: #f4f4f4;
+    background-color: rgb(46, 46, 46); /*    gray    */
+    color: rgb(255, 246, 246);         /* warm white */
 }
 
 /*QHeaderView::section {

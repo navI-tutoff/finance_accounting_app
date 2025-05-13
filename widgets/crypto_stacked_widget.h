@@ -10,6 +10,7 @@
 #include <QTimer>
 
 #include "../data_structures/user_session.h"
+#include "../styles/style_defines.h"
 
 namespace Ui {
 class CryptoStackedWidget;

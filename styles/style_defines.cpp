@@ -1,5 +1,5 @@
-#include <QColor>
+#include "style_defines.h"
 
-QColor warmWhiteColor{255, 246, 246};
-QColor greenPriceColor{39, 208, 127};
-QColor redPriceColor{239, 69, 74};
+const QColor warmWhiteColor = QColor{255, 246, 246};
+const QColor greenPriceColor = QColor{39, 208, 127};
+const QColor redPriceColor = QColor{239, 69, 74};

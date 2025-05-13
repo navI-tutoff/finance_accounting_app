@@ -22,6 +22,11 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="startPriceLabel">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Начальная цена портфеля: </string>
         </property>
@@ -29,6 +34,11 @@
       </item>
       <item>
        <widget class="QLabel" name="currentPriceLabel">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Текущая цена портфеля: </string>
         </property>
@@ -36,6 +46,11 @@
       </item>
       <item>
        <widget class="QLabel" name="profitLabel">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Прибыль по портфелю: </string>
         </property>
@@ -76,6 +91,11 @@
    </item>
    <item>
     <widget class="QTableView" name="tableView">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true"/>
      </property>
