@@ -3,6 +3,9 @@
         <file>assets/crypto_icon.png</file>
         <file>assets/major_house_icon.png</file>
         <file>assets/menu_icon.png</file>
+        <file>assets/add_icon.png</file>
+        <file>assets/delete_icon.png</file>
+        <file>assets/edit_icon.png</file>
     </qresource>
     <qresource prefix="/styles">
         <file>styles/style.css</file>

@@ -57,6 +57,11 @@ void InteractionCryptocoinDialog::setAvgBuyPrice(const double& avgBuyPr) {
 }
 
 void InteractionCryptocoinDialog::setTextLabel(const QString &text) {
+    // this->ui->textLabel->setStyleSheet(R"(
+    //     color: rgb(255, 246, 246); /* warm white */
+    //     font-size: 14px;
+    //     font-weight: bold;
+    // )");
     this->ui->textLabel->setText(text);
 }
 

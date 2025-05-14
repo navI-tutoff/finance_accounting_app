@@ -15,16 +15,14 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="basicInfoGroupBox">
-     <property name="title">
-      <string/>
-     </property>
+    <widget class="QFrame" name="basicInfoFrame">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="startPriceLabel">
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <pointsize>14</pointsize>
+          <bold>true</bold>
          </font>
         </property>
         <property name="text">
@@ -36,7 +34,8 @@
        <widget class="QLabel" name="currentPriceLabel">
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <pointsize>14</pointsize>
+          <bold>true</bold>
          </font>
         </property>
         <property name="text">
@@ -48,7 +47,8 @@
        <widget class="QLabel" name="profitLabel">
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <pointsize>14</pointsize>
+          <bold>true</bold>
          </font>
         </property>
         <property name="text">
@@ -60,30 +60,61 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="buttonsGroupBox">
-     <property name="title">
-      <string/>
+    <widget class="QFrame" name="buttonsFrame">
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="addCoinButton">
-        <property name="text">
-         <string>Добавить</string>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
-       </widget>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="editCoinButton">
-        <property name="text">
-         <string>Изменить</string>
+       <widget class="QFrame" name="innerButtonsFrame">
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="deleteCoinButton">
-        <property name="text">
-         <string>Удалить</string>
+        <property name="frameShape">
+         <enum>QFrame::Shape::NoFrame</enum>
         </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="addCoinButton">
+           <property name="text">
+            <string>Добавить</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="editCoinButton">
+           <property name="text">
+            <string>Изменить</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="deleteCoinButton">
+           <property name="text">
+            <string>Удалить</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

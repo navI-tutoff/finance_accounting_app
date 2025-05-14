@@ -257,12 +257,50 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     ui->tableView->resizeColumnsToContents();
     ui->tableView->setStyleSheet(R"(
         QHeaderView::section {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
         }
     )");
 
 // ============================= ↑ Crypto Table Settings ↑ =============================
+
+    // buttons' icons
+    QSize iconSize{24, 24};
+    QIcon addIcon{":/assets/add_icon.png"};
+    ui->addCoinButton->setText("");
+    ui->addCoinButton->setIcon(addIcon);
+    ui->addCoinButton->setIconSize(iconSize);
+    ui->addCoinButton->setCursor(Qt::PointingHandCursor);
+    ui->addCoinButton->setStyleSheet(R"(
+        background: transparent;
+        border: none;
+    )");
+
+    QIcon editIcon{":/assets/edit_icon.png"};
+    ui->editCoinButton->setText("");
+    ui->editCoinButton->setIcon(editIcon);
+    ui->editCoinButton->setIconSize(iconSize);
+    ui->editCoinButton->setCursor(Qt::PointingHandCursor);
+    ui->editCoinButton->setStyleSheet(R"(
+        background: transparent;
+        border: none;
+    )");
+
+    QIcon deleteIcon{":/assets/delete_icon.png"};
+    ui->deleteCoinButton->setText("");
+    ui->deleteCoinButton->setIcon(deleteIcon);
+    ui->deleteCoinButton->setIconSize(iconSize);
+    ui->deleteCoinButton->setCursor(Qt::PointingHandCursor);
+    ui->deleteCoinButton->setStyleSheet(R"(
+        background: transparent;
+        border: none;
+    )");
+
+    ui->innerButtonsFrame->setStyleSheet(R"(
+        background-color: rgb(58, 58, 58); /* = stateSelectedRowColor */
+        border: none;
+        border-radius: 12px;
+    )");
 }
 
 void CryptoStackedWidget::loadDataFromDB() {
