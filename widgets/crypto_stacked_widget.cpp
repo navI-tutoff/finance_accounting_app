@@ -255,6 +255,7 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     ui->tableView->setFrameShape(QFrame::Box);
     ui->tableView->resizeRowsToContents();
     ui->tableView->resizeColumnsToContents();
+    // ui->tableView->setSortingEnabled(true); // not working properly
     ui->tableView->setStyleSheet(R"(
         QHeaderView::section {
             font-size: 15px;
@@ -432,6 +433,7 @@ void CryptoStackedWidget::fetchPriceForAllCoins() {
 
 void CryptoStackedWidget::on_addCoinButton_clicked() {
     InteractionCryptocoinDialog *addCryptocoinDialog = new InteractionCryptocoinDialog(this);
+    addCryptocoinDialog->setWindowTitle("Добавление новой монеты");
     addCryptocoinDialog->setTextLabel("Добавление новой монеты");
 
     addCryptocoinDialog->show();
@@ -452,15 +454,19 @@ void CryptoStackedWidget::on_addCoinButton_clicked() {
 
         loadDataFromDB();
         fetchPriceForAllCoins();
+
+        delete addCryptocoinDialog;
     });
 
     connect(addCryptocoinDialog, &InteractionCryptocoinDialog::rejected, this, [=](){
         addCryptocoinDialog->close();
+        delete addCryptocoinDialog;
     });
 }
 
 void CryptoStackedWidget::on_editCoinButton_clicked() {
     InteractionCryptocoinDialog *editCryptocoinDialog = new InteractionCryptocoinDialog(this);
+    editCryptocoinDialog->setWindowTitle("Редактирование статистики");
     editCryptocoinDialog->setTextLabel("Редактирование статистики");
 
     /// TODO кажется, можно переписать функционал без лишнего Query. Брать все данные из model
@@ -515,15 +521,19 @@ void CryptoStackedWidget::on_editCoinButton_clicked() {
 
         loadDataFromDB();
         fetchPriceForAllCoins();
+
+        delete editCryptocoinDialog;
     });
 
     connect(editCryptocoinDialog, &InteractionCryptocoinDialog::rejected, this, [=](){
         editCryptocoinDialog->close();
+        delete editCryptocoinDialog;
     });
 }
 
 void CryptoStackedWidget::on_deleteCoinButton_clicked() {
     InteractionCryptocoinDialog *deleteCryptocoinDialog = new InteractionCryptocoinDialog(this);
+    deleteCryptocoinDialog->setWindowTitle("Удаление выбранной монеты");
     deleteCryptocoinDialog->setTextLabel("Удаление выбранной монеты");
     deleteCryptocoinDialog->okButton()->setText("Удалить");
 
@@ -575,10 +585,12 @@ void CryptoStackedWidget::on_deleteCoinButton_clicked() {
 
         loadDataFromDB();
         fetchPriceForAllCoins();
+
+        delete deleteCryptocoinDialog;
     });
 
     connect(deleteCryptocoinDialog, &InteractionCryptocoinDialog::rejected, this, [=](){
-        deleteCryptocoinDialog->close();
+        delete deleteCryptocoinDialog;
     });
 }
 
@@ -589,3 +601,32 @@ void CryptoStackedWidget::on_deleteCoinButton_clicked() {
 CryptoStackedWidget::~CryptoStackedWidget() {
     delete ui;
 }
+
+// void CryptoStackedWidget::on_pushButton_clicked() {
+//     QString API_URL_STR{"http://127.0.0.1:8001"};
+//     const QUrl API_URL(API_URL_STR);
+//     QNetworkRequest request(API_URL);
+
+//     QNetworkReply *networkReply = networkManager->get(request);
+//     QByteArray *dataBuffer = new QByteArray;
+//     connect(networkReply, &QIODevice::readyRead, this, [this, networkReply, dataBuffer](){
+//         dataBuffer->append(networkReply->readAll());
+//     });
+
+//     connect(networkReply, &QNetworkReply::finished, this, [this, networkReply, dataBuffer](){
+//         if (networkReply->error() != QNetworkReply::NoError) {
+//             qDebug() << "[ERROR] " << networkReply->errorString();
+//         } else {
+//             // turn the data into a json document
+//             QJsonDocument doc = QJsonDocument::fromJson(*dataBuffer);
+//             QJsonObject objectDoc = doc.toVariant().toJsonObject();
+//             QVariantMap map = objectDoc.toVariantMap();
+
+//             qDebug() << map;
+
+//         }
+
+
+//         networkReply->deleteLater();
+//     });
+// }

@@ -7,6 +7,8 @@ InteractionCryptocoinDialog::InteractionCryptocoinDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::AddCryptocoinDialog) {
     ui->setupUi(this);
+
+    this->setWindowIcon(QIcon{":/assets/crypto_icon.png"});
 }
 
 InteractionCryptocoinDialog::~InteractionCryptocoinDialog() {
@@ -19,11 +21,13 @@ void InteractionCryptocoinDialog::on_okButton_clicked() {
     this->volume = ui->volumeLineEdit->text().toDouble(&ok);
     if (!ok) {
         QMessageBox::warning(this, "Ошибка", "Введите корректное число. Например: 104.2");
+        reject();
         return;
     }
     this->avgBuyPrice = ui->avgBuyPriceLineEdit->text().toDouble(&ok);
     if (!ok) {
         QMessageBox::warning(this, "Ошибка", "Введите корректное число. Например: 104.2");
+        reject();
         return;
     }
 
