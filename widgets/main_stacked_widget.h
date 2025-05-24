@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QtCharts/QChartView>
+#include <QBarSeries>
+#include <QValueAxis>
 
 #include <QStandardItemModel>
 #include <QNetworkAccessManager>
@@ -35,6 +37,11 @@ private:
     QNetworkAccessManager *networkManager;
 
     QStandardItemModel *popular24hStatModel;
+
+    QChart *pieChart;
+
+    QChart *growthLeaderChart;
+    QValueAxis *growthChartAxisY;
 
     // QMap<QString, double> totalCryptoStatistic{}; // 1. "portfolioCost"; 2. "profit"; 3. "startCost"
     // const QStandardItemModel* cryptoModel{};

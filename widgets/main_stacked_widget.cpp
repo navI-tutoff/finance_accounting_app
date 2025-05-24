@@ -28,6 +28,7 @@ enum Columns  {
     ProfitPercent
 };
 
+namespace DelegateTools {
 class PercentageChangeCoinDelegate : public QStyledItemDelegate {
 public:
     PercentageChangeCoinDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
@@ -119,7 +120,8 @@ public:
         painter->restore();
     }
 };
-
+}
+using namespace DelegateTools;
 
 MainStackedWidget::MainStackedWidget(QWidget *parent)
     : QWidget(parent)
@@ -133,6 +135,43 @@ MainStackedWidget::MainStackedWidget(QWidget *parent)
     ui->popular24hStatTableView->setModel(popular24hStatModel);
 
     ui->totalBalanceLabel->setText("Стоимость портфеля: Загрузка...");
+
+    pieChart = new QChart();
+    pieChart->setBackgroundVisible(false);
+    pieChart->legend()->setVisible(false);
+    pieChart->setAnimationOptions(QChart::AllAnimations);
+    ui->pieChartView->setChart(pieChart);
+
+    growthLeaderChart = new QChart();
+    growthLeaderChart->setAnimationOptions(QChart::SeriesAnimations);
+    growthLeaderChart->setBackgroundVisible(false);
+    // title settings
+    QFont font = growthLeaderChart->font();
+    font.setPixelSize(15);
+    font.setBold(true);
+    growthLeaderChart->setTitleFont(font);
+    QBrush brush = growthLeaderChart->titleBrush();
+    brush.setColor(warmWhiteColor);
+    growthLeaderChart->setTitleBrush(brush);
+    growthLeaderChart->setTitle("Лидеры роста портфеля");
+    // legend settings
+    growthLeaderChart->legend()->setLabelColor(warmWhiteColor);
+    font.setBold(false);
+    font.setPixelSize(13);
+    growthLeaderChart->legend()->setFont(font);
+    growthLeaderChart->legend()->setVisible(true);
+    growthLeaderChart->legend()->setAlignment(Qt::AlignBottom);
+
+    growthChartAxisY = new QValueAxis();
+    growthChartAxisY->setGridLineColor(warmWhiteColor);
+    growthChartAxisY->setLinePenColor(warmWhiteColor);
+    auto axisYFont = growthChartAxisY->labelsFont();
+    axisYFont.setPixelSize(13);
+    growthChartAxisY->setLabelsFont(axisYFont);
+    growthChartAxisY->setLabelsColor(warmWhiteColor);
+    growthLeaderChart->addAxis(growthChartAxisY, Qt::AlignLeft);
+
+    ui->growLeaderChartView->setChart(growthLeaderChart);
 
     updatePopular24hStatistics();
 
@@ -212,14 +251,8 @@ void MainStackedWidget::updateTotalCryptoStatistics(const QMap<QString, double> 
         slice->setLabel(slice->label() + " " + QString::number(coinPercentage * 100, 'a', 1) + "%");
     }
 
-    QChart *chart = new QChart();
-    // chart settings
-    chart->setBackgroundVisible(false);
-    chart->legend()->setVisible(false);
-    chart->setAnimationOptions(QChart::AllAnimations);
-
-    chart->addSeries(pieCryptoSeries);
-    ui->pieChartView->setChart(chart);
+    pieChart->removeAllSeries();
+    pieChart->addSeries(pieCryptoSeries);
 }
 
 void MainStackedWidget::updatePopular24hStatistics() {
@@ -302,7 +335,7 @@ void MainStackedWidget::updateGrowthLeader(const QStandardItemModel* cryptoModel
             double min{std::numeric_limits<double>::max()};
             double max{std::numeric_limits<double>::min()};
 
-            QBarSeries *series = new QBarSeries();
+            QBarSeries *growthSeries = new QBarSeries();
             for (size_t i{}; i < jsonArraySize; i++) {
                 QJsonObject objectDoc = jsonArray.at(i).toObject();
                 QVariantMap map = objectDoc.toVariantMap();
@@ -310,50 +343,19 @@ void MainStackedWidget::updateGrowthLeader(const QStandardItemModel* cryptoModel
                 QBarSet *set = new QBarSet(map["symbol"].toString().remove("USDT"));
                 auto value = map["priceChangePercent"].toDouble();
                 *set << value;
+                growthSeries->append(set);
 
                 if (min > value) { min = value; }
                 if (max < value) { max = value; }
-
-                series->append(set);
             }
 
-            QValueAxis *axisY = new QValueAxis();
-            axisY->setRange(min, max);
-            axisY->applyNiceNumbers();
-            axisY->setGridLineColor(warmWhiteColor);
-            axisY->setLinePenColor(warmWhiteColor);
-            auto axisYFont = axisY->labelsFont();
-            axisYFont.setPixelSize(13);
-            axisY->setLabelsFont(axisYFont);
-            axisY->setLabelsColor(warmWhiteColor);
+            growthChartAxisY->setRange(min, max);
+            growthChartAxisY->applyNiceNumbers();
 
-            QChart *chart = new QChart();
-            chart->setAnimationOptions(QChart::SeriesAnimations);
-            chart->setBackgroundVisible(false);
+            growthLeaderChart->removeAllSeries();
+            growthLeaderChart->addSeries(growthSeries);
 
-            // title settings
-            QFont font = chart->font();
-            font.setPixelSize(15);
-            font.setBold(true);
-            chart->setTitleFont(font);
-            QBrush brush = chart->titleBrush();
-            brush.setColor(warmWhiteColor);
-            chart->setTitleBrush(brush);
-            chart->setTitle("Лидеры роста портфеля");
-
-            // legend settings
-            chart->legend()->setLabelColor(warmWhiteColor);
-            font.setBold(false);
-            font.setPixelSize(13);
-            chart->legend()->setFont(font);
-            chart->legend()->setVisible(true);
-            chart->legend()->setAlignment(Qt::AlignBottom);
-            chart->addSeries(series);
-
-            chart->addAxis(axisY, Qt::AlignLeft);
-            series->attachAxis(axisY);
-
-            ui->growLeaderChartView->setChart(chart);
+            growthSeries->attachAxis(growthChartAxisY);
         }
 
         delete dataBuffer;

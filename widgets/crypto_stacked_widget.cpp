@@ -27,21 +27,19 @@ enum Columns  {
 };
 
 namespace DelegateTools {
-    const QColor stateSelectedRowColor{58, 58, 58};
+const QColor stateSelectedRowColor{58, 58, 58};
 
-    void setupMonoFont(QPainter *painter) {
-        QFont monoFont("DejaVu Sans Mono");
-        // monoFont.setPixelSize(13);
-        painter->setFont(monoFont);
-    }
+void setupMonoFont(QPainter *painter) {
+    QFont monoFont("DejaVu Sans Mono");
+    // monoFont.setPixelSize(13);
+    painter->setFont(monoFont);
+}
 
-    void setupStateSelectedStyle(QPainter *painter, const QStyleOptionViewItem &option) {
-        if (option.state & QStyle::State_Selected) {
-            painter->fillRect(option.rect, stateSelectedRowColor);
-        }
+void setupStateSelectedStyle(QPainter *painter, const QStyleOptionViewItem &option) {
+    if (option.state & QStyle::State_Selected) {
+        painter->fillRect(option.rect, stateSelectedRowColor);
     }
 }
-using namespace DelegateTools;
 
 class CoinDelegate : public QStyledItemDelegate {
 public:
@@ -218,6 +216,8 @@ public:
         painter->restore();
     }
 };
+}
+using namespace DelegateTools;
 
 CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     : QWidget(parent)
@@ -231,7 +231,8 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     model->setHorizontalHeaderLabels({"Монета", "Объём", "Ср. цена покупки", "Цена", "Количество", "Стоимость", "Прибыль", "Прибыль, %"});
     ui->tableView->setModel(model);
 
-    updatePriceTimer->setInterval(60000);
+    // updatePriceTimer->setInterval(60000);
+    updatePriceTimer->setInterval(5000);
     connect(updatePriceTimer, &QTimer::timeout, this, &CryptoStackedWidget::fetchPriceForAllCoins);
     updatePriceTimer->start();
 
@@ -416,6 +417,7 @@ void CryptoStackedWidget::fetchPriceForCoin(const QString &coin,
             emit CryptoStackedWidget::allPricesFetched();
         }
 
+        delete dataBuffer;
         networkReply->deleteLater();
     });
 }

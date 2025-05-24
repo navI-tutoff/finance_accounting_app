@@ -33,7 +33,7 @@ bool Database::connect(const QString &hostName, const QString &dbName,
     m_database.setPort(m_port);
 
     if (!m_database.open()) {
-        qDebug() << "Database connect error. " << m_database.lastError().text();
+        qDebug() << "Database connect error -> " << m_database.lastError().text();
         return false;
     }
 
