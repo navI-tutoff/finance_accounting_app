@@ -231,8 +231,8 @@ CryptoStackedWidget::CryptoStackedWidget(QWidget *parent)
     model->setHorizontalHeaderLabels({"Монета", "Объём", "Ср. цена покупки", "Цена", "Количество", "Стоимость", "Прибыль", "Прибыль, %"});
     ui->tableView->setModel(model);
 
-    // updatePriceTimer->setInterval(60000);
-    updatePriceTimer->setInterval(5000);
+    updatePriceTimer->setInterval(60000);
+    // updatePriceTimer->setInterval(5000);
     connect(updatePriceTimer, &QTimer::timeout, this, &CryptoStackedWidget::fetchPriceForAllCoins);
     updatePriceTimer->start();
 
@@ -493,11 +493,13 @@ void CryptoStackedWidget::on_editCoinButton_clicked() {
     }
 
     neccessaryCoinSelectQuery.next();
+    // set member variables in class object
     editCryptocoinDialog->setCoinName(neccessaryCoinSelectQuery.value("coin").toString());
     editCryptocoinDialog->setVolume(neccessaryCoinSelectQuery.value("volume").toDouble());
     editCryptocoinDialog->setAvgBuyPrice(neccessaryCoinSelectQuery.value("avg_buy_price").toDouble());
 
     QString oldCoinName = editCryptocoinDialog->getCoinName();
+    // set text in window
     editCryptocoinDialog->coinNameLineEdit()->setText(editCryptocoinDialog->getCoinName());
     editCryptocoinDialog->volumeLineEdit()->setText(QString::number(editCryptocoinDialog->getVolume()));
     editCryptocoinDialog->avgBuyPriceLineEdit()->setText(QString::number(editCryptocoinDialog->getAvgBuyPrice()));
@@ -632,3 +634,67 @@ CryptoStackedWidget::~CryptoStackedWidget() {
 //         networkReply->deleteLater();
 //     });
 // }
+
+#include <QFileDialog>
+#include <QtPrintSupport/QPrinter>
+
+void CryptoStackedWidget::on_pushButton_clicked() {
+    QString filePath = QFileDialog::getSaveFileName(this, "Сохранить отчёт в PDF", "", "*.pdf");
+    if (filePath.isEmpty())
+        return;
+
+    if (!filePath.endsWith(".pdf")) {
+        filePath += ".pdf";
+    }
+
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(filePath);
+
+    QTextDocument doc;
+    QString html;
+
+    html += "<h2 align='center'>Инвестиционный отчёт</h2>";
+
+    double totalCost{}, totalVolume{}, totalProfit{};
+    int rowCount = model->rowCount();
+
+    for (int row = 0; row < rowCount; ++row) {
+        totalVolume += model->item(row, Columns::Volume)->text().toDouble();
+        totalCost   += model->item(row, Columns::TotalCost)->text().toDouble();
+        totalProfit += model->item(row, Columns::Profit)->text().toDouble();
+    }
+
+    html += "<h3><b>Общая стоимость портфеля:</b> " + QString::number(totalCost, 'f', 2) + " $</h3>";
+    html += "<h3><b>Общая прибыль:</b> " + QString::number(totalProfit, 'f', 2) + " $</h3>";
+
+    html += "<br><table border='1' cellspacing='0' cellpadding='3' style='text-align:center'>";
+    html += "<thead><tr style='background-color:#f0f0f0'>";
+    html += "<th>Монета</th><th>Объём</th><th>Ср. цена покупки</th><th>Цена</th><th>Количество</th><th>Стоимость</th><th>Прибыль, $</th><th>Прибыль, %</th>";
+    html += "</tr></thead><tbody>";
+
+    for (int row = 0; row < rowCount; ++row) {
+        html += "<tr>";
+        for (int col = 0; col < model->columnCount(); ++col) {
+            QString text = model->item(row, col)->text();
+
+            if (col == Columns::Profit || col == Columns::ProfitPercent) {
+                double profitValue = text.toDouble();
+                QString bgColor = profitValue >= 0 ? "#c6f6c3" : "#f6c3c3";
+                html += "<td style='background-color:" + bgColor + "'>" + text + "</td>";
+            } else {
+                html += "<td>" + text + "</td>";
+            }
+        }
+        html += "</tr>";
+    }
+
+    html += "</tbody></table>";
+
+    html += "<br></br><br></br><p>Дата создания: " + QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm") + "</p>";
+
+    doc.setHtml(html);
+    doc.print(&printer);
+
+    QMessageBox::information(this, "Успех", "Отчёт сохранён в файл:\n" + filePath);
+}

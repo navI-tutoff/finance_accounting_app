@@ -10,7 +10,7 @@ MajorApplicationWindow::MajorApplicationWindow(QWidget *parent)
     , ui(new Ui::MajorApplicationWindow) {
     ui->setupUi(this);
 
-    this->resize(1580, 820);
+    this->resize(1660, 820);
     this->setWindowTitle("Приложение для учёта финансов");
     this->setWindowIcon(QIcon{":/assets/crypto_icon.png"});
 

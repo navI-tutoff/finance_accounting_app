@@ -94,6 +94,13 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>PushButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="addCoinButton">
            <property name="text">
             <string>Добавить</string>

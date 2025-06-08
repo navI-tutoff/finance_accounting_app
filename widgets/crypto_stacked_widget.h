@@ -31,6 +31,8 @@ private slots:
     void on_editCoinButton_clicked();
     void on_deleteCoinButton_clicked();
 
+    void on_pushButton_clicked();
+
 public:
     void loadDataFromDB();
     void fetchPriceForCoin(const QString &coin, const size_t &coinRow, const size_t &numberOfCoins);

@@ -10,6 +10,9 @@
 AuthorizationWindow::AuthorizationWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::AuthorizationWindow) {
     ui->setupUi(this);
 
+    this->setWindowTitle("Приложение для учёта финансов");
+    this->setWindowIcon(QIcon{":/assets/crypto_icon.png"});
+
     ui->infoLabel->setStyleSheet("margin-left: auto;\nmargin-right: auto;");
 }
 

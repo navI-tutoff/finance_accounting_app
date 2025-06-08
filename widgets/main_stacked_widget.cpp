@@ -229,7 +229,8 @@ void MainStackedWidget::updateTotalCryptoStatistics(const QMap<QString, double> 
 
     QPieSeries *pieCryptoSeries = new QPieSeries();
     auto modelRowsCount{cryptoModel->rowCount()};
-    for (size_t row{}; row < modelRowsCount; row++) {
+    auto modifiedCryptoModelSize = modelRowsCount > 7 ? 7 : modelRowsCount;
+    for (size_t row{}; row < modifiedCryptoModelSize; row++) {
         QString coinName{cryptoModel->data(QModelIndex(
                                                cryptoModel->index(row, Columns::Coin))).toString()};
 
@@ -305,11 +306,12 @@ void MainStackedWidget::updateGrowthLeader(const QStandardItemModel* cryptoModel
     QString API_URL_STR{"https://www.binance.com/api/v3/ticker/24hr?symbols=["};
 
     auto cryptoModelSize = cryptoModel->rowCount();
-    for (size_t row{}; row < cryptoModelSize; row++) {
+    auto modifiedCryptoModelSize = cryptoModelSize > 7 ? 7 : cryptoModelSize;
+    for (size_t row{}; row < modifiedCryptoModelSize; row++) {
         auto coin = cryptoModel->data(QModelIndex(cryptoModel->index(row, Columns::Coin))).toString();
         API_URL_STR += "\"" + coin + "USDT\"";
 
-        if (row != cryptoModelSize - 1) { API_URL_STR += ","; }
+        if (row != modifiedCryptoModelSize - 1) { API_URL_STR += ","; }
     }
     API_URL_STR += "]";
 
